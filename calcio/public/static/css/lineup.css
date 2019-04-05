@@ -1,0 +1,240 @@
+.App {
+  position: absolute;
+  /* display: flex;
+  flex-direction: row;
+  justify-content: space-between; */
+}
+
+/* .Settings {
+  position: relative;
+} */
+
+.Settings .Results .Info-player {
+  margin-bottom: 0;
+}
+
+.Settings .Results .Info-player td {
+  padding-bottom: 0;
+  border-bottom:  0;
+}
+
+.Settings .Results .Info-player .Photo {
+  width: 25px;
+  height: 25px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.Settings .Results .Info-player .Name {
+  display: inline-block;
+  vertical-align: top;
+  max-width: 144px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+}
+
+.Settings .Results .Info-player .Role {
+  display: inline;
+}
+
+
+
+
+.Settings .Customize {
+  position: relative;
+  width: 100%;
+  top: 5px;
+}
+
+.Settings .Menu {
+  margin: 0;
+  box-sizing: border-box;
+  width: 162px;
+  line-height: 56px;
+  height: 56px;
+  display: inline-block;
+  background: #fafafa;
+  border-radius: 3px;
+  padding: 0 20px;
+  border: none;
+  color: #000;
+  cursor: pointer;
+  text-align: center;
+  transform-origin: bottom left;
+  transition: 0.3s transform ease-in-out;
+  will-change: transform;
+  -webkit-tap-highlight-color: rgba(104, 27, 39, 0.1);
+}
+
+.Settings .Menu .Selected {
+  margin: 0;
+  transition: 0.3s transform ease-in-out;
+}
+
+.Settings .Menu.expanded {
+  border-radius: 0 0 3px 3px;
+}
+
+.Settings .Menu.expanded .Selected {
+  margin: 0;
+}
+
+.Settings .Menu .Options {
+  display: flex;
+  flex-direction: column-reverse;
+  transform-origin: bottom center;
+  width: 162px;
+  border-radius: 3px 3px 0 0;
+  position: absolute;
+  left: 0;
+  background: #fafafa;
+  bottom: 56px;
+  overflow: hidden;
+  margin: 0;
+  transition: 0.3s transform ease-in-out;
+  will-change: transform;
+  transform: scaleY(0);
+  /* box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.06); */
+}
+
+.Settings .Menu.expanded .Options {
+  transform: scaleY(1);
+}
+
+.Settings .Menu .Options div:not(:last-child) {
+  background: #fafafa;
+  height: 56px;
+  width: 162px;
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.Settings .Menu .Options div:first-child {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.Settings .Menu .Options div:hover {
+  background: #ececec;
+}
+
+.Settings .Menu.Tactic {
+  position: relative;
+}
+
+.Settings .Menu.Pitch-style {
+  position: absolute;
+  right: 0;
+}
+
+.Settings .CTA {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin-top: 15px;
+  line-height: 56px;
+  text-align: center;
+  background: #fafafa;
+  border-radius: 3px;
+  text-decoration: none;
+  color: rgba(0, 0, 0, 0.95);
+  cursor: pointer;
+  box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.06);
+}
+
+.Pitch {
+  position: relative;
+  width: 540px;
+  height: 540px;
+  background: #2E7D32;
+  box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.06);
+  perspective: 800px;
+  overflow: hidden;
+}
+
+.Pitch > div {
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 5%, rgba(255, 255, 255, 0) 100%);
+}
+
+.Pitch .Outlines {
+  position: absolute;
+  display: block;
+  transform-origin: bottom center;
+  transform: scale(1.41);
+  pointer-events: none;
+  bottom: -13%;
+  left: 5%;
+  width: 90%;
+  height: 76%;
+  user-select: none;
+}
+
+.Pitch .Signature {
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(0, 0, 0, 0.95);
+  text-align: center;
+  font-size: 12px;
+  width: 20%;
+  line-height: 140%;
+  display: block;
+  margin: 0 auto;
+  user-select: none;
+}
+
+.Pitch .PositionIndicator {
+  position: absolute;
+  width: 6%;
+  height: 6%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%) rotateX(45deg);
+}
+
+.grabbable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.PlayerCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  width: 17%;
+  height: 17.5%;
+  z-index: 300;
+  position: absolute;
+  text-align: center;
+  cursor: move;
+  will-change: transform;
+  border-radius: 5px;
+  font-family: 'saira condensed', Arial, Helvetica, sans-serif;
+  font-weight: 500;
+  transition: opacity 0.3s ease-in-out;
+  user-select: none;
+}
+
+.PlayerCard.Selected {
+  background: rgba(0, 0, 0, 0.2) !important;
+}
+
+.PlayerCard .Portrait {
+  width: 80%;
+  height: auto;
+  border-bottom: 2px solid white;
+  user-select: none;
+}
+
+.PlayerCard p {
+  text-transform: uppercase;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+  width: 100%;
+  margin: 0;
+  font-size: 16px;
+  user-select: none;
+}
+
+.disabled {
+  cursor: default !important;
+  opacity: 0.6;
+}

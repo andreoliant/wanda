@@ -1,0 +1,81 @@
+.Customize {
+  position: absolute;
+  width: 100%;
+  bottom: 5px;
+}
+
+.Menu {
+  margin: 0;
+  box-sizing: border-box;
+  width: 162px;
+  line-height: 56px;
+  height: 56px;
+  display: inline-block;
+  background: #fafafa;
+  border-radius: 3px;
+  padding: 0 20px;
+  border: none;
+  color: #000;
+  cursor: pointer;
+  text-align: center;
+  /* transform-origin: bottom left; */
+  transform-origin: top center;
+  transition: 0.3s transform ease-in-out;
+  will-change: transform;
+  -webkit-tap-highlight-color: rgba(104, 27, 39, 0.1);
+}
+
+.Menu .Selected {
+  margin: 0;
+  transition: 0.3s transform ease-in-out;
+}
+
+.Menu.expanded {
+  border-radius: 0 0 3px 3px;
+}
+
+.Menu.expanded .Selected {
+  margin: 0;
+}
+
+.Menu .Options {
+  display: flex;
+  flex-direction: column-reverse;
+  transform-origin: bottom center;
+  width: 162px;
+  border-radius: 3px 3px 0 0;
+  position: absolute;
+  left: 0;
+  background: #fafafa;
+  bottom: 56px;
+  overflow: hidden;
+  margin: 0;
+  transition: 0.3s transform ease-in-out;
+  will-change: transform;
+  transform: scaleY(0);
+  /* box-shadow: 0 3px 6px 1px rgba(0, 0, 0, 0.06); */
+}
+
+.Menu.expanded .Options {
+  /* transform: scaleY(1); */
+  transform: scaleY(1);
+}
+
+.Menu .Options div:not(:last-child) {
+  background: #fafafa;
+  height: 56px;
+  width: 162px;
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.Menu .Options div:first-child {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.Menu .Options div:hover {
+  background: #ececec;
+}
+
+.Menu .Tactic {
+  position: relative;
+}
