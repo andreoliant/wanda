@@ -63,8 +63,6 @@ class SearchResult extends React.Component {
       this.setState({ logo: actualLogo.src })
     })
     actualLogo.src = this.state.logoBackup
-
-    // this.deactivateSearchResult()
   }
 
   // Verifiche su selezione:
@@ -78,53 +76,32 @@ class SearchResult extends React.Component {
     if (this.props.selectedPlayers.length < 11 &&
       !appo.includes(this.props.player.id)) {
       this.props.selectPlayer(this.props.player)
-
-      // evidenzia i giocatori gia selezionati
-      // ReactDOM.findDOMNode(this).classList.add("table-active")
     }
   }
 
-  // evidenzia players gia selezionati nel lineup
-  // deactivateSearchResult = () => {
-  //   let appo = []
-  //   for (const player in this.props.selectedPlayers) {
-  //     appo.push(this.props.selectedPlayers[player].id)
-  //   }
-  //   if (appo.includes(this.props.player.id)) {
-  //     let prova = "Info-player table-active"
-  //     console.log(prova)
-  //     return(prova)
-  //   } else {
-  //     let prova = "Info-player grabbable"
-  //     console.log(prova)
-  //     return(prova)
-  //   }
-  // }
-
   render() {
-
     return (
       <tr
         key={this.props.player.id}
-        // className={this.deactivateSearchResult}
         className="Info-player grabbable"
         onClick={this.checkedSelection} // DA QUI DEVE PARTIRE DRAG & DROP
+        // TODO: class={() ? "table-active" : null}
       >
-
+        {
+          // <img alt={this.props.player.name} src={this.state.picture} className="Photo" />
+        }
         <td>
-          <p className="Name">{this.props.player.name} </p>
+          <p className="Name">{this.props.player.name}</p>
         </td>
 
         <td>
-          <p> {this.props.player.rating} </p>
+          <p>{this.props.player.rating}</p>
         </td>
-
         <td>
           {
-            this.props.player.positions.map(role => (
-              <p className="Role">{role} </p>
-            ))
-          }
+          this.props.player.positions.map(role => (
+            <p className="Role">{role} </p>
+          ))}
         </td>
       </tr>
     )
@@ -500,24 +477,6 @@ class PlayerCard extends React.Component {
       this.props.unoccupyPosition(activePosition)
       // Prevent direct downloads
       // this.props.markDownloadAsObsolete()
-
-      // Post player and position to server when removed
-      // make JSON
-      let appo = JSON.stringify({
-        id: this.props.player.id,
-        position: activePosition,
-      })
-
-      // send data to APIs
-      fetch('/teams/lineup/api/rm-player', {
-        method: 'POST',
-        mode: "same-origin", // no-cors, cors, *same-origin
-        headers: {
-          // 'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: appo,
-        })
     }
   }
 
@@ -643,23 +602,6 @@ class Pitch extends React.Component {
     // Update data
     this.occupyPosition(position)
     card.dataset.activePosition = position
-
-    // Post player and position to server when positioned
-    // make JSON
-    let appo = JSON.stringify({
-      id: selector.replace('Player',''),
-      position: position,
-    })
-    // send data to APIs
-    fetch('/teams/lineup/api/add-player', {
-      method: 'POST',
-      mode: "same-origin", // no-cors, cors, *same-origin
-      headers: {
-        // 'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: appo,
-      })
   }
 
   // ELIMINA TUTTI I GIOCATORI (TODO)
@@ -726,88 +668,40 @@ class App extends React.Component {
       searchResults: [],
       activeTactic: [],
       activeTacticName: "",
-      selectedPlayers: [],
-      savedLineup: []
+      selectedPlayers: []
     }
+  }
+
+  // Invoca API all'avvio
+  componentDidMount() {
+    this.getSearchResults();
+    this.getSelectedPlayers();
+    this.setActiveTactic("433");
   }
 
   // Prende elenco e info giocatori da API e aggiunge dati a state
   getSearchResults = () => {
     fetch('/teams/lineup/api/players/myteam')
     .then(res => res.json())
-    .then(searchResults => this.setState({ searchResults : searchResults }))
-    // .then(console.log("team ok"))
+    .then(searchResults => this.setState({ searchResults }))
+    // .then(console.log(this.state.searchResults))
   }
 
   // Prende elenco di giocatori selezionati
-  getSavedLineup = () => {
+  getSelectedPlayers = () => {
     fetch('/teams/lineup/api/selected/myteam')
     .then(res => res.json())
-    .then(savedLineup => this.setState({ savedLineup : savedLineup }))
-    // .then(console.log("lineup ok"))
+    .then(selectedPlayers => this.setState({ selectedPlayers }))
+    // .then(console.log(this.state.selectedPlayers))
   }
 
   // Prende tattica da API e aggiunge tattica + nome tattica a state
-  setActiveTactic = tacticNameBase => {
-    if (tacticNameBase === undefined) {
-      var tacticName = 'default'
-      fetch(`/teams/lineup/api/tactic/${tacticName}`)
-      .then(res => res.json())
-      // .then(activeTactic => this.setState({ activeTactic : activeTactic }))
-      // .then(console.log("tactic ok"));
-      // this.setState({ activeTacticName : tacticName });
-      .then(jsonData => {
-        this.setState({ activeTactic : jsonData['tacticData'] })
-        this.setState({ activeTacticName : jsonData['tacticName'] })
-      })
-      // console.log(tacticName);
-    } else {
-      var tacticName = tacticNameBase
-      fetch(`/teams/lineup/api/tactic/${tacticName}`)
-      .then(res => res.json())
-      // .then(activeTactic => this.setState({ activeTactic : activeTactic }))
-      // .then(console.log("tactic ok"));
-      // this.setState({ activeTacticName : tacticName });
-      // console.log(tacticName);
-      .then(jsonData => {
-        this.setState({ activeTactic : jsonData['tacticData'] })
-        this.setState({ activeTacticName : jsonData['tacticName'] })
-      })
-    }
-
-  }
-
-  // Posiziona i giocatori nel lineup salvato
-  showSavedLineup = () => {
-    let players = this.state.searchResults
-    // per ogni giocatore nel lineup salvato
-    for (const i in this.state.savedLineup) {
-      let playerId = this.state.savedLineup[i].id
-      let playerPos = this.state.savedLineup[i].position
-      // cerca il giocatore nella squadra
-      for (const i in players) {
-        // appena trova il giocatore lo posizona e poi esce dal loop sulla suadra
-        if (players[i].id === playerId) {
-          let playerObj = players[i]
-          this.selectPlayer(playerObj)
-          break
-        }
-      }
-    }
-  }
-
-  // initLineup = (callback) => {
-  //   this.getSearchResults()
-  //   this.setActiveTactic("433")
-  //   this.getSavedLineup()
-  //   console.log(callback)
-  //   callback()
-  // }
-
-  initLineup = () => {
-    this.getSearchResults()
-    this.setActiveTactic()
-    this.getSavedLineup()
+  setActiveTactic = tacticName => {
+    fetch(`/teams/lineup/api/tactic/${tacticName}`)
+    .then(res => res.json())
+    .then(activeTactic => this.setState({ activeTactic : activeTactic }));
+    this.setState({ activeTacticName : tacticName });
+    // console.log(tacticName);
   }
 
   // Funzioni comuni a più components (per selezione giocatori)
@@ -827,14 +721,6 @@ class App extends React.Component {
     this.setState({
       selectedPlayers: newSelection,
     })
-  }
-
-  // Invoca API all'avvio e posiziona giocatori
-  componentDidMount() {
-    // https://flaviocopes.com/javascript-async-await/
-    this.initLineup()
-    // TODO: qui andrebbe usato "await" o qualcosa del genere
-    setTimeout(() => this.showSavedLineup(), 30)
   }
 
   render() {

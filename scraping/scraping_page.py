@@ -2,7 +2,6 @@
 
 # libs
 import os
-import io
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -44,7 +43,8 @@ for url_add in url_list:
     url = url_base + url_add
     temp = url.split('/')[5]
     id = "{:06d}".format(int(temp))
-    players['id'] = url.split('/')[5]
+    # players['id'] = url.split('/')[5]
+    players['id'] = id
 
     # scraping
     page = requests.get(url)

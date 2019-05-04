@@ -1,4 +1,4 @@
-extends index
+extends base
 
 block navbar
   div.sidebar-sticky
@@ -38,7 +38,7 @@ block main
           th(scope="col") Forza
           th(scope="col") Roli
           th(scope="col") Club
-      each player in players
+      each player in supervars.SearchResults
         tbody
           tr(key=`${player.id}` className="Result-player grabbable")
             td 

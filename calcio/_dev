@@ -5,6 +5,8 @@ https://freshman.tech/learn-node/
 https://www.youtube.com/watch?v=5yTazHkDR4o
 +
 https://medium.com/front-end-weekly/server-side-rendering-with-react-and-express-382591bfc77c
+++
+http://usefulangle.com/post/62/javascript-send-data-to-server-on-page-exit-reload-redirect
 
 
 $:
@@ -33,3 +35,4 @@ npm i bootstrap reactstrap
 ... DEADEND
 cd ..
 npm install babel-cli@6 babel-preset-react-app@3
+npm install sqlite3
