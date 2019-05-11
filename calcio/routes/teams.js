@@ -86,7 +86,7 @@ router.get('/lineup/api/tactic/:tactic', (req, res) => {
       tacticData : data
     }
     res.json(data2);
-    console.log(data2)
+    // console.log(data2)
   } else {
     var tactic = reqTactic
     let data = require(`../public/tactics/${tactic}.json`);
@@ -96,14 +96,11 @@ router.get('/lineup/api/tactic/:tactic', (req, res) => {
     }
     res.json(data2);
   };
-
-
-
   setSupervars(supervars, "activeTacticName", tactic)
   console.log('Sent activeTactic to client');
 });
 
-// aggiunge payer (per player positioning nel pith)
+// aggiunge / modifica player (per player positioning nel pith)
 router.post('/lineup/api/add-player', (req, res) => {
   // console.log(req.body)
 
@@ -122,7 +119,7 @@ router.post('/lineup/api/add-player', (req, res) => {
 
   setSupervars(supervars, "savedLineup", appo)
   // console.log(supervars.savedLineup);
-  console.log('Player added')
+  console.log('Player added or modified')
 });
 
 // elmina player (per move-out su pith)
