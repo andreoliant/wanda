@@ -10,7 +10,16 @@ On Terminal:
 
 ```bash
 cd PATH-TO-FOLDER/wanda
+git init 
+git config user.name "YOUR-NAME"
+git config user
+git remote add origin http://github.com/andreoliant/wanda.git
 git pull origin master
+# do something, then upload to GitHub
+git status
+git add . # OR: git add "FILE-NAME.FILE-EXTENSION"
+git commit -m "SOME-DESCRIPTION"
+git push -u origin master
 ```
 
 # Node setup
