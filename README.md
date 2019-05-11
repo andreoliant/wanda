@@ -12,14 +12,9 @@ On Terminal:
 cd PATH-TO-FOLDER/wanda
 git init 
 git config user.name "YOUR-NAME"
-git config user
+git config user.email "YOUR-EMAL"
 git remote add origin http://github.com/andreoliant/wanda.git
 git pull origin master
-# do something, then upload to GitHub
-git status
-git add . # OR: git add "FILE-NAME.FILE-EXTENSION"
-git commit -m "SOME-DESCRIPTION"
-git push -u origin master
 ```
 
 # Node setup
@@ -27,11 +22,7 @@ On Terminal:
 
 ```bash
 cd PATH-TO-FOLDER/wanda/calcio
-npm install express
-npm install pug
-npm install react react-dom
-npm install babel-cli@6 babel-preset-react-app@3
-npm install sqlite3
+npm install
 ```
 # Run
 On Terminal:
@@ -41,3 +32,17 @@ cd PATH-TO-FOLDER/wanda/calcio
 node server
 ```
 Then browse to http://localhost:5000
+
+# Edit and upload to GitHub
+On Terminal:
+
+```bash
+cd PATH-TO-FOLDER/wanda
+git status
+git pull origin master
+# do something, then upload to GitHub
+git add . # OR: git add "FILE-NAME.FILE-EXTENSION"
+git commit -m "SOME-DESCRIPTION"
+git push -u origin master
+# insert user & pw (only the first time)
+```
