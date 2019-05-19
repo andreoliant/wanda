@@ -4,6 +4,9 @@
 const express = require('express');
 const app = express();
 
+// load db connection
+const DB = require('./database.js');
+
 // use template engine
 app.set('view engine', 'pug');
 
@@ -17,12 +20,18 @@ app.use(express.json())
 // supervars (as global variable)
 supervars = {
   managerName: '',
+  teamId: '',
   teamName: '',
+  leagueId: '',
+  leagueName: '',
   SearchResults: [],
   activeTacticName: '433',
   savedLineup: []
 };
-
+// id_team: '000044',
+//   club_team: 'Inter',
+//   id_league: '0031',
+//   nome_lega: 'Serie A TIM'
 // savedLineup: [{id: "158023", position: "P10"},
 //               {id: "138956", position: "P04"}]
 
@@ -35,50 +44,7 @@ setSupervars = (supervars, variable, value) => {
 // setSupervars(supervars, "managerName", "pop")
 // console.log(supervars.managerName)
 
-// db setup
-const sqlite3 = require('sqlite3').verbose();
-// const DB_PATH = ':memory:';
-const DB_PATH = './db/wanda.sqlite';
 
-
-// db init
-const DB = new sqlite3.Database(DB_PATH, function(err){
-    if (err) {
-        console.log(err)
-        return
-    }
-    console.log('Connected to ' + DB_PATH)
-
-    // DB.serialize(() => {
-    //   DB.each(`SELECT PlaylistId as id,
-    //                   Name as name
-    //            FROM playlists`, (err, row) => {
-    //     if (err) {
-    //       console.error(err.message);
-    //     }
-    //     console.log(row.id + "\t" + row.name);
-    //   });
-    // });
-
-    // let sql = "select name from sqlite_master where type='table'"
-    // DB.get(sql, (err, tables) => {
-    //   if (err) {
-    //     return console.error(err.message);
-    //   }
-    //   console.log(tables);
-    // });
-
-
-
-    // foreign keys
-    // DB.exec('PRAGMA foreign_keys = ON;', function(error)  {
-    //     if (error){
-    //         console.error("Pragma statement didn't work.")
-    //     } else {
-    //         console.log("Foreign Key Enforcement is on.")
-    //     }
-    // });
-});
 
 // dbSchema = `CREATE TABLE IF NOT EXISTS Supervars (
 //         id integer NOT NULL PRIMARY KEY AUTOINCREMENT,
@@ -92,17 +58,7 @@ const DB = new sqlite3.Database(DB_PATH, function(err){
 //     }
 // });
 
-app.get('/prova', (req, res) => {
 
-  let sql = "select name from sqlite_master where type='table'"
-  DB.get(sql, (err, tables) => {
-    if (err) {
-      return console.error(err.message);
-    }
-    console.log(tables);
-    res.send(tables);
-  });
-});
 
 
 
@@ -115,35 +71,47 @@ app.get('/', (req, res) => {
 app.post('/', (req, res) => {
   // init db and cache
 
-  // store manager & team as variables
-  // const managerName = req.body.managerName
-  // const teamName = req.body.teamName
-  // DB.run('INSERT INTO Supervars(managerName, teamName) VALUES(?, ?)', [managerName, teamName], (err) => {
-  // 	if(err) {
-  // 		return console.log(err.message);
-  // 	}
-  // 	console.log('Row was added to the table: ${this.lastID}');
-  //   res.render('home', {
-  //     managerName : managerName,
-  //     teamName : teamName
-  //   });
-  // })
-  // let supervars.managerName = req.body.managerName;
-  // let supervars.teamName = req.body.teamName;
   setSupervars(supervars, "managerName", req.body.managerName)
   setSupervars(supervars, "teamName", req.body.teamName)
 
-  // res.render('home', {
-  //    managerName : supervars.managerName,
-  //    teamName : supervars.teamName
-  //  })
-   res.render('home', {
-      supervars : supervars
-   })
+  // get teamId an league
+  let sql = "SELECT * FROM teams WHERE club_team = ?"
+  let sql2 = "SELECT * FROM players WHERE id_team = ?"
 
-  // res.send('Hello World! Supercazzola');
-  // res.redirect('home')
+  DB.get(sql, req.body.teamName, (err, data) => {
+    if (err) {
+      return console.error(err.message);
+
+    } else {
+
+      DB.all(sql2, data['id_team'], (err2, data2) => {
+        if (err2) {
+          return console.error(err2.message);
+        }
+        // console.log(data2)
+        setSupervars(supervars, "SearchResults", data2)
+        // console.log(supervars)
+        })
+      // let team = data['id_team']
+      // console.log(team)
+
+        setSupervars(supervars, "teamId", data['id_team'])
+        setSupervars(supervars, "leagueId", data['id_league'])
+        setSupervars(supervars, "leagueName", data['nome_lega'])
+
+        // let team = supervars['teamId']
+      }
+
+        // res.render('home', {
+        //    managerName : supervars.managerName,
+        //    teamName : supervars.teamName
+        //  })
+      res.render('home', {
+        supervars : supervars
+      })
+    })
 });
+
 
 // route (back) to home
 app.get('/home', (req, res) => {
@@ -173,10 +141,64 @@ app.get('/home', (req, res) => {
   })
 });
 
+
+
+
+app.get('/auto-team', (req, res) => {
+  // var tempTeam = req.params.team;
+  var tempTeam = '%' + req.query.team + '%';
+  // console.log(tempTeam)
+
+  let sql = "SELECT club_team FROM teams WHERE club_team LIKE ?"
+
+  DB.all(sql, tempTeam, (err, data) => {
+    if (err) {
+      return console.error(err.message);
+    }
+    let teams = []
+    for (const i in data) {
+      let team = data[i]['club_team']
+      teams.push(team)
+      }
+    // console.log(teams)
+    res.json({
+      results : teams
+    });
+  })
+});
+
+app.get('/auto-player', (req, res) => {
+  // var tempTeam = req.params.team;
+  var tempPlayer = '%' + req.query.player + '%';
+  // console.log(tempTeam)
+  console.log(tempPlayer)
+
+  let sql = "SELECT nome FROM players WHERE nome LIKE ?"
+
+  DB.all(sql, tempPlayer, (err, data) => {
+    if (err) {
+      return console.error(err.message);
+    }
+    let players = []
+    for (const i in data) {
+      let player = data[i]['nome']
+      players.push(player)
+      }
+    // console.log(teams)
+    res.json({
+      results : players
+    });
+    })
+});
+
+
+
 // use routes (must be after the supervars global variable!)
-const teams = require('./routes/teams');
-app.use('/teams', teams)
+const team = require('./routes/team');
+app.use('/team', team)
 // MEMO: dentro teams.js la root corrisponde a /teams/
+const market = require('./routes/market');
+app.use('/market', market)
 
 // setup dev server
 // const server = app.listen(7000, () => {

@@ -1,13 +1,28 @@
 extends base
 
 block navbar
+  ul.navbar-nav.mr-auto
+    li.nav-item
+      a(class="nav-link active" href="/team") Squadra
+    li.nav-item
+      a(class="nav-link" href="/market") Mercato
+    li.nav-item
+      a(class="nav-link" href="#") Finanze
+    li.nav-item
+      a(class="nav-link" href="#") Media
+    li.nav-item
+      a(class="nav-link" href="#") Calendario
+    li.nav-item
+      a(class="nav-link" href="#") Partita
+      
+block navbar-left
   div.sidebar-sticky
     ul.nav.flex-column
       li.nav-item
-        a(class="nav-link active" href="/teams")
+        a(class="nav-link active" href="/team")
           span(data-feather="rooster") Rosa
       li.nav-item
-        a(class="nav-link" href="/teams/lineup")
+        a(class="nav-link" href="/team/lineup")
           span(data-feather="lineup") Lineup
       li.nav-item
         a(class="nav-link" href="#")
@@ -36,30 +51,32 @@ block main
           th(scope="col") Foto
           th(scope="col") Nome
           th(scope="col") Forza
-          th(scope="col") Roli
-          th(scope="col") Club
+          th(scope="col") Ruoli
+          //- th(scope="col") Club
       each player in supervars.SearchResults
         tbody
           tr(key=`${player.id}` className="Result-player grabbable")
             td 
               img(
                 class="playerphoto"
-                src=`${player.photo}`
-                alt=`${player.name}`
+                src=`${"../../data/images/photos/" + player.photo_folder + "/" + player.id + ".png"}`
+                alt=`${player.nome}`
                 )
             td
-              p #{player.name}
+              a(href="/team/player/"+`${player.id}`) 
+                p #{player.nome}
             td
-              p #{player.rating}
+              p #{player.valtot}
             td
-              each role in player.positions
+              each role in player.pos_all.split(":::")
                 p.ruoli #{role} 
-            td
-              img(
-                class="clubicon"
-                src=`${player.club.logo}`
-                alt=`${player.club.name}`
-                )
+                
+            //- td
+            //-   img(
+            //-     class="clubicon"
+            //-     src=`${player.club.logo}`
+            //-     alt=`${player.club.name}`
+            //-     )
 
 
         

@@ -381,40 +381,36 @@ var PlayerCard = function (_React$Component5) {
 
     _this8.matchRoleToPosition = function (role) {
       var position = "";
-      if (role === "POR") {
+      if (role === "G") {
         position = "P01";
       } else if (role === "DC") {
         position = "P04";
-      } else if (role === "TS") {
+      } else if (role === "DG") {
         position = "P03";
-      } else if (role === "ASA") {
-        // CHK
+      } else if (role === "DLG") {
         position = "P03";
-      } else if (role === "TD") {
+      } else if (role === "DD") {
         position = "P02";
-      } else if (role === "ADA") {
-        // CHK
+      } else if (role === "DLD") {
         position = "P02";
-      } else if (role === "CDC") {
+      } else if (role === "MDC") {
         position = "P06";
-      } else if (role === "CC") {
+      } else if (role === "MC") {
         position = "P06";
-      } else if (role === "ES") {
-        // CHK
+      } else if (role === "MG") {
         position = "P11";
-      } else if (role === "ED") {
-        // CHK
+      } else if (role === "MD") {
         position = "P07";
-      } else if (role === "COC") {
+      } else if (role === "MOC") {
         position = "P10";
       } else if (role === "AD") {
         position = "P07";
         // position.push("10")
-      } else if (role === "AS") {
+      } else if (role === "AG") {
         position = "P11";
-      } else if (role === "AT") {
-        position = "P10";
       } else if (role === "ATT") {
+        position = "P10";
+      } else if (role === "BU") {
         position = "P09";
       }
       // console.log(role, position)
@@ -716,7 +712,7 @@ var PlayerCard = function (_React$Component5) {
       var _iteratorError5 = undefined;
 
       try {
-        mainLoop: for (var _iterator5 = this.props.player.pos_all.split(":::")[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+        mainLoop: for (var _iterator5 = this.props.player.positions[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
           var preferredPosition = _step5.value;
 
           i++;
@@ -761,7 +757,7 @@ var PlayerCard = function (_React$Component5) {
                 // Position player where he belongs
                 this.props.positionPlayer(position, "Player" + this.props.player.id);
                 break mainLoop;
-              } else if (i === this.props.player.pos_all.split(":::").length - 1) {
+              } else if (i === this.props.player.positions.length - 1) {
                 // Last loop, add player anyway
                 this.findClosestPosition(preferredPosition);
                 break mainLoop;
@@ -854,14 +850,14 @@ var PlayerCard = function (_React$Component5) {
         },
         React.createElement("img", {
           className: "Portrait",
-          src: "../../data/images/photos/" + this.props.player.photo_folder + "/" + this.props.player.id + ".png",
-          alt: this.props.player.nome
+          src: this.state.picture,
+          alt: this.props.player.name
           // onDragStart={ e => { e.preventDefault() } }
         }),
         React.createElement(
           "p",
           null,
-          this.props.player.nome
+          this.props.player.shortName
         )
       );
     }
