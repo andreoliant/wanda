@@ -70,7 +70,8 @@ router.get('/player/:player', (req, res) => {
 
     res.render('player', {
        supervars : supervars,
-       player : thisPlayer
+       player : thisPlayer,
+       origin : "team"
     })
     // console.log(thisPlayer);
     // res.send(thisPlayer);

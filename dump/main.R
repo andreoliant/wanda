@@ -277,13 +277,15 @@ players <- players %>%
 
 # export
 write.csv2(players, file.path(out_path, "players.csv"), row.names = FALSE)
-
+write.csv2(teams, file.path(out_path, "teams.csv"), row.names = FALSE)
 
 # --------------------------------------------------------------------------- #
 # elenco campionati (e match con team)
 
 leagues <- teams %>%
   distinct(id_league, nome_lega)
+
+write.csv2(leagues, file.path(out_path, "leagues.csv"), row.names = FALSE)
 
 
 # --------------------------------------------------------------------------- #
@@ -313,6 +315,18 @@ postions <- postions[order(postions)]
 
 
 # --------------------------------------------------------------------------- #
+# elenco nazioni
+
+nations <- players %>%
+  distinct(naz)
+
+write.csv2(nations, file.path(out_path, "nations.csv"), row.names = FALSE)
+
+# TODO: verifica se nomi delle squasre nazionali sono gli stessi
+
+
+
+# --------------------------------------------------------------------------- #
 # db
 
 # crea db
@@ -322,6 +336,8 @@ db <- dbConnect(SQLite(), file.path(DB, "wanda.sqlite"))
 dbWriteTable(db, "players", players, overwrite=TRUE, row.names=FALSE)
 dbWriteTable(db, "teams", teams, overwrite=TRUE, row.names=FALSE)
 dbWriteTable(db, "leagues", leagues, overwrite=TRUE, row.names=FALSE)
+dbWriteTable(db, "nations", nations, overwrite=TRUE, row.names=FALSE)
+
 
 # DEBUG:
 # chk <- dbReadTable(db, "players")
@@ -329,6 +345,12 @@ dbWriteTable(db, "leagues", leagues, overwrite=TRUE, row.names=FALSE)
 # chiude
 dbDisconnect(db)
 # MEMO: copiare a mano il db in webapp
+
+# copy to calcio
+file.copy(from = file.path(DB, "wanda.sqlite"),
+          to = file.path(dirname(getwd()), "calcio", "db", "wanda.sqlite"), 
+          overwrite=TRUE)
+
 
 # CREATE TABLE `players` (
 #   `id` TEXT,

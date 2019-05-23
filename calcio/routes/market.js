@@ -19,94 +19,87 @@ router.get('/', (req, res) => {
 });
 
 
+function getData(res, sql, queryVars) {
+  DB.all(sql, queryVars, (err, data) => {
+    if (err) {
+      return console.error(err.message);
+
+    } else {
+      // console.log(queryVars)
+      // console.log(data.length)
+      res.render('market', {
+        supervars : supervars,
+        players : data
+      });
+    }
+  });
+}
+
 // filtra giocatori to home
 router.post('/', (req, res) => {
 
+  console.log(req.body)
+
   // request params
-  let playerName = req.body.playerName
-  let teamName = req.body.teamName
-  let playerNation = req.body.playerNation
-  let playerPos = req.body.position
+  var playerName = req.body.playerName
+  var teamName = req.body.teamName
+  var playerNation = req.body.playerNation
+  var playerPos = req.body.position
 
-  let priceMax = Number(req.body.priceMax)
-  let wageMax = Number(req.body.wageMax)
-  let etaMin = Number(req.body.etaMin)
-  let etaMax = Number(req.body.etaMax)
-  let forzaMax = Number(req.body.forzaMax)
-  let forzaMin = Number(req.body.forzaMin)
-
-  if (playerName == undefined) {
+  if (playerName != '') {
 
     console.log("Filter by playerName")
     let sql = "SELECT * FROM players WHERE nome = ?"
 
-    DB.get(sql, playerName, (err, data) => {
-      if (err) {
-        return console.error(err.message);
+    getData(res, sql, playerName)
 
-      } else {
-        res.render('market', {
-          supervars : supervars,
-          players : [data]
-        })
-      }
-     });
-
-  } else if (teamName == undefined) {
+  } else if (teamName != '') {
+    // TODO: rifare con join!!!
 
     console.log("Filter by teamName")
-    let sql = "SELECT * FROM teams WHERE club_team = ?"
-    let sql2 = "SELECT * FROM players WHERE id_team = ?"
 
-    DB.get(sql, teamName, (err, data) => {
-      if (err) {
-        return console.error(err.message);
+    let sql = "SELECT * \
+                FROM players \
+                INNER JOIN teams \
+                ON players.id_team = teams.id_team \
+                WHERE teams.club_team = ?";
 
-      } else {
-        DB.all(sql2, data['id_team'], (err2, data2) => {
-          if (err2) {
-            return console.error(err2.message);
-          }
-          res.render('market', {
-            supervars : supervars,
-            players : data2
-          })
-        })
-      }
-     });
+    getData(res, sql, teamName)
+
+  } else if (playerNation != '') {
+
+    console.log("Filter by playerNation")
+
+    let sql = "SELECT * \
+                FROM players \
+                WHERE naz = ? \
+                ORDER BY valtot DESC \
+                LIMIT 50"
+
+    getData(res, sql, playerName)
 
   } else {
 
-    function getData(params) {
-      let sql = "SELECT * \
-                  FROM players \
-                  WHERE eta >= ? AND eta <= ? AND \
-                        valore_e <= ? AND \
-                        stipendio_e <= ? AND \
-                        valtot >= ? AND valtot <= ? \
-                  ORDER BY valtot DESC \
-                  LIMIT 50";
+    console.log("Filter by numeric vars")
 
-      DB.all(sql, params, (err, data) => {
-        if (err) {
-          return console.error(err.message);
+    let sql = "SELECT * \
+                FROM players \
+                WHERE eta >= ? AND eta <= ? AND \
+                      valore_e <= ? AND \
+                      stipendio_e <= ? AND \
+                      valtot >= ? AND valtot <= ? \
+                ORDER BY valtot DESC \
+                LIMIT 50";
 
-        } else {
-          // console.log(params)
-          console.log(data)
-          res.render('market', {
-            supervars : supervars,
-            players : data
-          })
-        }
-       });
-    }
+    function setQueryVars(reqBody) {
 
-    // let params = [etaMin, etaMax, priceMax, wageMax, forzaMin, forzaMax]
+      var priceMax = Number(req.body.priceMax)
+      var wageMax = Number(reqBody.wageMax)
+      var etaMin = Number(reqBody.etaMin)
+      var etaMax = Number(reqBody.etaMax)
+      var forzaMax = Number(reqBody.forzaMax)
+      var forzaMin = Number(reqBody.forzaMin)
 
-    function setParams(getData) {
-
-      console.log("Filter by numeric vars")
       console.log("etaMin " + etaMin)
       console.log("etaMax " + etaMax)
       console.log("priceMax " + priceMax)
@@ -115,24 +108,27 @@ router.post('/', (req, res) => {
       console.log("forzaMax " + forzaMax)
       // console.log(typeof(etaMax))
 
-      if (etaMin == 0) {
-        let etaMin = 0
+      if (etaMin == undefined) {
+        var etaMin = 0
       }
 
-      if (etaMax == 0) {
-        let etaMax = 100
+      if (etaMax == undefined) {
+        var etaMax = 100
+      } else if (etaMax == 0) {
+        var etaMax = 100
       }
 
-      if (priceMax == 0) {
-        let priceMax = 1000000000
+      if (priceMax == undefined) {
+        var priceMax = 1000000000
+      } else if (priceMax == 0) {
+        var priceMax = 1000000000
       }
 
-      if (wageMax == 0) {
-        let wageMax = 1000000000
+      if (wageMax == undefined) {
+        var wageMax = 1000000000
+      } else if (wageMax == 0) {
+        var wageMax = 1000000000
       }
-
-
-
       // console.log(etaMin)
       // console.log(typeof(etaMin))
       console.log("-----------------------")
@@ -144,10 +140,21 @@ router.post('/', (req, res) => {
       console.log("forzaMax " + forzaMax)
 
       params = [etaMin, etaMax, priceMax, wageMax, forzaMin, forzaMax]
-      getData(params)
+      return(params)
 
     }
 
+    // let params = [etaMin, etaMax, priceMax, wageMax, forzaMin, forzaMax]
+
+    // main function (setup query params)
+    function queryPlayers(reqBody) {
+      getData(res, sql, setQueryVars(reqBody))
+    }
+
+    // getData(res, sql, playerName)
+
+    // execution
+    queryPlayers(req.body)
 
   }
 });
@@ -160,7 +167,25 @@ router.post('/', (req, res) => {
 
 
 
+// pagina per player
+router.get('/player/:player', (req, res) => {
 
+  let sql = "SELECT * FROM players WHERE id=?"
+
+  DB.get(sql, req.params.player, (err, thisPlayer) => {
+    if (err) {
+      return console.error(err.message);
+    }
+
+    res.render('player', {
+       supervars : supervars,
+       player : thisPlayer,
+       origin : "market"
+    })
+    // console.log(thisPlayer);
+    // res.send(thisPlayer);
+  });
+});
 
 
 

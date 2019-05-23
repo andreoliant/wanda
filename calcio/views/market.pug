@@ -45,9 +45,9 @@ block navbar-left
       li.nav-item
         a(class="nav-link" href="/market/shortlist")
           span(data-feather="training") Rete osservatori
-      li.nav-item
-        a(class="nav-link" href="#")
-          span(data-feather="mood") ...
+      //- li.nav-item
+      //-   a(class="nav-link" href="#")
+      //-     span(data-feather="mood") ...
           //- Qui andrebbe inserita anche ricerca Staff
     h6.sidebar-heading.d-flex.justify-content-between.align-items-center.px-3.mt-4.mb-1.text-muted
       span Filtri
@@ -65,8 +65,8 @@ block navbar-left
               name="teamName" aria-describedby="auto-team")
       div.form-group
         //- label(for="playerNation") Nazionalità
-        input(type="text" class="form-control" id="playerNation" placeholder="Nazione"
-              name="playerNation" aria-describedby="playerNation")
+        input(type="text" class="form-control" id="auto-nation" placeholder="Nazione"
+              name="playerNation" aria-describedby="auto-nation")
 
       div.form-group
         div.input-group
@@ -93,8 +93,8 @@ block navbar-left
                                                     
       div.form-group
         //- label(for="playerPos") Ruolo
-        select(id="playerPos" class="custom-select custom-select-sm")
-          option(selected) Posizione (default)
+        select(id="playerPos" name="playerPos" class="custom-select custom-select-sm")
+          option(selected) Tutti i ruoli
           option(value="POR") Portiere
           option(value="DC") Difensore centrale
           option(value="TD") Terzino destro
@@ -131,39 +131,48 @@ block navbar-left
 
 block main
   if players
-    div.container
-      table(class="table table-hover")
-        thead(class="thead-light")
-          tr
-            th(scope="col") Foto
-            th(scope="col") Nome
-            th(scope="col") Forza
-            th(scope="col") Ruoli
-            //- th(scope="col") Club
+    table(class="table table-hover table-sm")
+      thead(class="thead-light")
+        tr
+          th(scope="col") Nome
+          th(scope="col") Club
+          th(scope="col") Nazionalità
+          th(scope="col") Età
+          th(scope="col") Forza
+          th(scope="col") Ruoli
+          th(scope="col") Valore
+          th(scope="col") Ingaggio
+      tbody
         each player in players
-          tbody
-            tr(key=`${player.id}` className="Result-player grabbable")
-              td 
-                img(
-                  class="playerphoto"
-                  src=`${"../../data/images/photos/" + player.photo_folder + "/" + player.id + ".png"}`
-                  alt=`${player.nome}`
-                  )
-              td
-                a(href="/team/market/"+`${player.id}`) 
-                  p #{player.nome}
-              td
-                p #{player.valtot}
-              //- td
-              //-   each role in player.pos_all.split(":::")
-              //-     p.ruoli #{role} 
+          tr
+            td
+              a(href="/market/player/"+`${player.id}`) 
+                p #{player.nome}
+            td
+              p #{player.club_team}
+              //- TODO: integrare con icona
+            td
+              p #{player.naz}
+              //- TODO: integrare con icona
+            td
+              p #{player.eta}
+            td
+              p #{player.valtot} (#{player.valpot})
+            td
+              each role in player.pos_all.split(":::")
+                p.ruoli #{role} 
+            td.text-right
+              p #{"€ " + player.valore_e.toLocaleString()} 
+            td.text-right
+              p #{"€ " + (player.stipendio_e * 12).toLocaleString()}    
                   
-              //- td
-              //-   img(
-              //-     class="clubicon"
-              //-     src=`${player.club.logo}`
-              //-     alt=`${player.club.name}`
-              //-     )
+                
+            //- td
+            //-   img(
+            //-     class="clubicon"
+            //-     src=`${player.club.logo}`
+            //-     alt=`${player.club.name}`
+            //-     )
 
             
 block scripts
@@ -197,6 +206,19 @@ block scripts
       });
     })
   
+  //- autocomplete per nazione
+  script(type="text/javascript").
+    $(function() {
+      $("#auto-nation").autocomplete({
+          source: function(request, response) {
+              $.getJSON("/auto-nation",{
+                  team: request.term,
+              }, function(data) {
+                  response(data.results);
+              });
+          }
+      });
+    })
   
   //- range slider per forza giocatore
   //- TODO: restringere lato dx

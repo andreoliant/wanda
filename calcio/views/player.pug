@@ -2,14 +2,16 @@ extends base
 
 block navbar
   ul.navbar-nav.mr-auto
-    if player.club_team === supervars.teamName
+    if origin === "team"
       li.nav-item
         a(class="nav-link active" href="/team") Squadra
-    else
+      li.nav-item
+        a(class="nav-link" href="/market") Mercato
+    else if origin === "market"
       li.nav-item
         a(class="nav-link" href="/team") Squadra
-    li.nav-item
-      a(class="nav-link" href="/market") Mercato
+      li.nav-item
+        a(class="nav-link active" href="/market") Mercato    
     li.nav-item
       a(class="nav-link" href="#") Finanze
     li.nav-item
@@ -21,31 +23,40 @@ block navbar
 
 block navbar-left
   div.sidebar-sticky
-    ul.nav.flex-column
-      li.nav-item
-        a(class="nav-link active" href="/team")
-          span(data-feather="rooster") Rosa
-      li.nav-item
-        a(class="nav-link" href="/team/lineup")
-          span(data-feather="lineup") Lineup
-      li.nav-item
-        a(class="nav-link" href="#")
-          span(data-feather="tactic") Tattica
-      li.nav-item
-        a(class="nav-link" href="#")
-          span(data-feather="training") Allenamento
-      li.nav-item
-        a(class="nav-link" href="#")
-          span(data-feather="mood") Morale
-    
-    h6.sidebar-heading.d-flex.justify-content-between.align-items-center.px-3.mt-4.mb-1.text-muted
-      span Parla con il giocatore
-
-    ul.nav.flex-column.mb-2
-      li.nav-item
-        //-  Button trigger modal
-        a(type="button" class="nav-link" data-toggle="modal" data-target="#contract") Contratto
-        a(type="button" class="nav-link" data-toggle="modal" data-target="#behaviour") Comportamento
+    if origin === "team"
+      ul.nav.flex-column
+        li.nav-item
+          a(class="nav-link active" href="/team")
+            span(data-feather="rooster") Rosa
+        li.nav-item
+          a(class="nav-link" href="/team/lineup")
+            span(data-feather="lineup") Lineup
+      h6.sidebar-heading.d-flex.justify-content-between.align-items-center.px-3.mt-4.mb-1.text-muted
+        span Parla con il giocatore
+      ul.nav.flex-column.mb-2
+        li.nav-item
+          //-  Button trigger modal
+          a(type="button" class="nav-link" data-toggle="modal" data-target="#contract") Contratto
+          a(type="button" class="nav-link" data-toggle="modal" data-target="#behaviour") Comportamento
+    if origin === "market"
+      ul.nav.flex-column
+        li.nav-item
+          a(class="nav-link active" href="/market")
+            span(data-feather="rooster") Ricerca
+        li.nav-item
+          a(class="nav-link" href="/market/shortlist")
+            span(data-feather="lineup") Shortlist
+        li.nav-item
+          a(class="nav-link" href="/market/shortlist")
+            span(data-feather="training") Rete osservatori
+      h6.sidebar-heading.d-flex.justify-content-between.align-items-center.px-3.mt-4.mb-1.text-muted
+        span Parla con il procuratore
+      ul.nav.flex-column.mb-2
+        li.nav-item
+          //-  Button trigger modal
+          a(type="button" class="nav-link" data-toggle="modal" data-target="#newOffer") Fai un'offerta
+          a(type="button" class="nav-link" data-toggle="modal" data-target="#addShortlist") Aggiungi alla shortlist
+      
 
 block main
   //- div#root
@@ -74,7 +85,10 @@ block main
             h4
               span.badge.badge-pill.badge-warning #{player.valpot}
               span  potenziale
-          div.cardr
+            p #{player.naz}
+            if origin === "market"
+              p #{player.club_team} 
+          div.card
             div.card-header Contratto
             ul.list-group.list-group-flush
               li.list-group-item.d-flex.justify-content-between.align-items-center Valore
@@ -117,19 +131,6 @@ block main
           div.tab-pane.fade.show.active(id="nav-forza" role="tabpanel" aria-labelledby="nav-forza-tab")
             div.card-group
               div.card
-                div.card-header Passaggi e tocco
-                ul.list-group.list-group-flush
-                  li.list-group-item.d-flex.justify-content-between.align-items-center Cross
-                    span.badge.badge-primary.badge-pill #{player.cross} 
-                  li.list-group-item.d-flex.justify-content-between.align-items-center Passaggio corto
-                    span.badge.badge-primary.badge-pill #{player.pass_corto} 
-                  li.list-group-item.d-flex.justify-content-between.align-items-center Passaggio lungo
-                    span.badge.badge-primary.badge-pill #{player.pass_lungo} 
-                  li.list-group-item.d-flex.justify-content-between.align-items-center Controllo palla
-                    span.badge.badge-primary.badge-pill #{player.contr_palla}
-                  li.list-group-item.d-flex.justify-content-between.align-items-center Dribbling
-                    span.badge.badge-primary.badge-pill #{player.dribbling}                   
-              div.card
                 div.card-header Tiro
                 ul.list-group.list-group-flush
                   li.list-group-item.d-flex.justify-content-between.align-items-center Finalizzazione
@@ -146,6 +147,20 @@ block main
                     span.badge.badge-primary.badge-pill #{player.tiri_volo} 
                   li.list-group-item.d-flex.justify-content-between.align-items-center Colpo di testa
                     span.badge.badge-primary.badge-pill #{player.colpo_testa}
+              div.card
+                div.card-header Passaggi e tocco
+                ul.list-group.list-group-flush
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Cross
+                    span.badge.badge-primary.badge-pill #{player.cross} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Passaggio corto
+                    span.badge.badge-primary.badge-pill #{player.pass_corto} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Passaggio lungo
+                    span.badge.badge-primary.badge-pill #{player.pass_lungo} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Controllo palla
+                    span.badge.badge-primary.badge-pill #{player.contr_palla}
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Dribbling
+                    span.badge.badge-primary.badge-pill #{player.dribbling}                   
+              
               div.card
                 div.card-header Difesa
                 ul.list-group.list-group-flush
@@ -245,8 +260,8 @@ block main
           else
             a(class="nav-link" href="#") Fai un'offerta
         div.modal-footer
-          button(type="button" class="btn btn-secondary" data-dismiss="modal") Close
-          button(type="button" class="btn btn-primary") Save change
+          //- button(type="button" class="btn btn-secondary" data-dismiss="modal") Close
+          button(type="button" class="btn btn-primary") Salva
           //- qui deve inviare un post o ajax con dati...
     
   div(class="modal fade" id="behaviour" tabindex="-1" role="dialog" aria-labelledby="behaviourLabel" aria-hidden="true")
@@ -261,9 +276,36 @@ block main
           a(class="nav-link" href="#") Nomina come Capitano
           a(class="nav-link" href="#") Digli di cambiare procuratore
         div.modal-footer
-          button(type="button" class="btn btn-secondary" data-dismiss="modal") Close
-          button(type="button" class="btn btn-primary") Save change
+          button(type="button" class="btn btn-primary") Salva
         
+  div(class="modal fade" id="newOffer" tabindex="-1" role="dialog" aria-labelledby="newOfferLabel" aria-hidden="true")
+    div.modal-dialog.modal-lg.modal-dialog-centered(role="document")
+      div.modal-content
+        div.modal-header
+          h5.modal-title(id="newOfferLabel") Aquisto del giocatore
+          button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+            span(aria-hidden="true") &times;
+        div.modal-body 
+          a(class="nav-link" href="#") Sonda l'interesse
+          a(class="nav-link" href="#") Corrompi il procuratore
+          a(class="nav-link" href="#") Fai un'offerta alla squadra
+          a(class="nav-link" href="#") Offri il contratto al giocatore
+        div.modal-footer
+          button(type="button" class="btn btn-primary") Salva
+          
+  div(class="modal fade" id="addShortlist" tabindex="-1" role="dialog" aria-labelledby="addShortlistLabel" aria-hidden="true")
+    div.modal-dialog.modal-lg.modal-dialog-centered(role="document")
+      div.modal-content
+        div.modal-header
+          h5.modal-title(id="addShortlistLabel") Aggiungi alla shortlist
+          button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+            span(aria-hidden="true") &times;
+        div.modal-body 
+          a(class="nav-link" href="#") Chiedi agli osservatori di fare una valutazione
+          a(class="nav-link" href="#") ...
+        div.modal-footer
+          button(type="button" class="btn btn-primary") Salva
+
 
   
         

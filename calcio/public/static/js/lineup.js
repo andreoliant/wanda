@@ -657,7 +657,7 @@ var PlayerCard = function (_React$Component5) {
         });
 
         // send data to APIs
-        fetch('/teams/lineup/api/rm-player', {
+        fetch('/team/lineup/api/rm-player', {
           method: 'POST',
           mode: "same-origin", // no-cors, cors, *same-origin
           headers: {
@@ -933,7 +933,7 @@ var Pitch = function (_React$Component6) {
         position: position
       });
       // send data to APIs
-      fetch('/teams/lineup/api/add-player', {
+      fetch('/team/lineup/api/add-player', {
         method: 'POST',
         mode: "same-origin", // no-cors, cors, *same-origin
         headers: {
@@ -1083,7 +1083,7 @@ var App = function (_React$Component7) {
     var _this12 = _possibleConstructorReturn(this, (App.__proto__ || Object.getPrototypeOf(App)).call(this, props));
 
     _this12.getSearchResults = function () {
-      fetch('/teams/lineup/api/players/myteam').then(function (res) {
+      fetch('/team/lineup/api/players/myteam').then(function (res) {
         return res.json();
       }).then(function (searchResults) {
         return _this12.setState({ searchResults: searchResults });
@@ -1092,7 +1092,7 @@ var App = function (_React$Component7) {
     };
 
     _this12.getSavedLineup = function () {
-      fetch('/teams/lineup/api/selected/myteam').then(function (res) {
+      fetch('/team/lineup/api/selected/myteam').then(function (res) {
         return res.json();
       }).then(function (savedLineup) {
         return _this12.setState({ savedLineup: savedLineup });
@@ -1103,7 +1103,7 @@ var App = function (_React$Component7) {
     _this12.setActiveTactic = function (tacticNameBase) {
       if (tacticNameBase === undefined) {
         var tacticName = 'default';
-        fetch("/teams/lineup/api/tactic/" + tacticName).then(function (res) {
+        fetch("/team/lineup/api/tactic/" + tacticName).then(function (res) {
           return res.json();
         })
         // .then(activeTactic => this.setState({ activeTactic : activeTactic }))
@@ -1116,7 +1116,7 @@ var App = function (_React$Component7) {
         // console.log(tacticName);
       } else {
         var tacticName = tacticNameBase;
-        fetch("/teams/lineup/api/tactic/" + tacticName).then(function (res) {
+        fetch("/team/lineup/api/tactic/" + tacticName).then(function (res) {
           return res.json();
         })
         // .then(activeTactic => this.setState({ activeTactic : activeTactic }))

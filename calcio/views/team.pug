@@ -24,59 +24,53 @@ block navbar-left
       li.nav-item
         a(class="nav-link" href="/team/lineup")
           span(data-feather="lineup") Lineup
-      li.nav-item
-        a(class="nav-link" href="#")
-          span(data-feather="tactic") Tattica
-      li.nav-item
-        a(class="nav-link" href="#")
-          span(data-feather="training") Allenamento
-      li.nav-item
-        a(class="nav-link" href="#")
-          span(data-feather="mood") Morale
-    h6.sidebar-heading.d-flex.justify-content-between.align-items-center.px-3.mt-4.mb-1.text-muted
-      span Supercazzole
-      a(class="d-flex align-items-center text-muted" href="#")
-        span(data-feather="plus-circle")
-    ul.nav.flex-column.mb-2
-      li.nav-item
-        a(class="nav-link" href="#")
-          span(data-feather="file-text") ...
+      //- li.nav-item
+      //-   a(class="nav-link" href="#")
+      //-     span(data-feather="tactic") Tattica
+      //- li.nav-item
+      //-   a(class="nav-link" href="#")
+      //-     span(data-feather="training") Allenamento
+      //- li.nav-item
+      //-   a(class="nav-link" href="#")
+      //-     span(data-feather="mood") Morale
+
 
 block main
-  //- div#root
-  div.container
-    table(class="table table-hover")
+  if supervars.SearchResults
+    table(class="table table-hover table-sm")
       thead(class="thead-light")
         tr
-          th(scope="col") Foto
           th(scope="col") Nome
+          th(scope="col") Club
+          th(scope="col") Nazionalità
+          th(scope="col") Età
           th(scope="col") Forza
           th(scope="col") Ruoli
-          //- th(scope="col") Club
-      each player in supervars.SearchResults
-        tbody
-          tr(key=`${player.id}` className="Result-player grabbable")
-            td 
-              img(
-                class="playerphoto"
-                src=`${"../../data/images/photos/" + player.photo_folder + "/" + player.id + ".png"}`
-                alt=`${player.nome}`
-                )
+          th(scope="col") Valore
+          th(scope="col") Ingaggio
+      tbody
+        each player in supervars.SearchResults
+          tr
             td
               a(href="/team/player/"+`${player.id}`) 
                 p #{player.nome}
             td
-              p #{player.valtot}
+              p #{player.club_team}
+              //- TODO: integrare con icona
+            td
+              p #{player.naz}
+              //- TODO: integrare con icona
+            td
+              p #{player.eta}
+            td
+              p #{player.valtot} (#{player.valpot})
             td
               each role in player.pos_all.split(":::")
                 p.ruoli #{role} 
-                
-            //- td
-            //-   img(
-            //-     class="clubicon"
-            //-     src=`${player.club.logo}`
-            //-     alt=`${player.club.name}`
-            //-     )
+            td.text-right
+              p #{"€ " + player.valore_e.toLocaleString()} 
+            td.text-right
+              p #{"€ " + (player.stipendio_e * 12).toLocaleString()} 
 
 
         

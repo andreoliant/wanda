@@ -191,6 +191,28 @@ app.get('/auto-player', (req, res) => {
     })
 });
 
+app.get('/auto-nation', (req, res) => {
+  // var tempTeam = req.params.team;
+  var tempNaz = '%' + req.query.team + '%';
+  // console.log(tempTeam)
+
+  let sql = "SELECT naz FROM nations WHERE naz LIKE ?"
+
+  DB.all(sql, tempNaz, (err, data) => {
+    if (err) {
+      return console.error(err.message);
+    }
+    let nations = []
+    for (const i in data) {
+      let naz = data[i]['naz']
+      nations.push(naz)
+      }
+    // console.log(teams)
+    res.json({
+      results : nations
+    });
+  })
+});
 
 
 // use routes (must be after the supervars global variable!)

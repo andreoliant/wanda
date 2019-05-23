@@ -1,7 +1,7 @@
 {
   "name": "wanda",
   "version": "1.0.0",
-  "description": "Wanda Football MAnager",
+  "description": "Wanda Football Manager",
   "main": "server.js",
   "scripts": {
     "client-install": "npm install --prefix client",
@@ -19,12 +19,11 @@
     "create-react-app": "^2.1.8",
     "express": "^4.16.4",
     "lodash": "^4.17.11",
+    "nodemon": "^1.19.0",
     "pug": "^2.0.3",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "sqlite3": "^4.0.8"
   },
-  "devDependencies": {
-    "nodemon": "^1.19.0"
-  }
+  "devDependencies": {}
 }

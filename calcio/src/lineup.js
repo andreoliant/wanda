@@ -516,7 +516,7 @@ class PlayerCard extends React.Component {
       })
 
       // send data to APIs
-      fetch('/teams/lineup/api/rm-player', {
+      fetch('/team/lineup/api/rm-player', {
         method: 'POST',
         mode: "same-origin", // no-cors, cors, *same-origin
         headers: {
@@ -658,7 +658,7 @@ class Pitch extends React.Component {
       position: position,
     })
     // send data to APIs
-    fetch('/teams/lineup/api/add-player', {
+    fetch('/team/lineup/api/add-player', {
       method: 'POST',
       mode: "same-origin", // no-cors, cors, *same-origin
       headers: {
@@ -740,7 +740,7 @@ class App extends React.Component {
 
   // Prende elenco e info giocatori da API e aggiunge dati a state
   getSearchResults = () => {
-    fetch('/teams/lineup/api/players/myteam')
+    fetch('/team/lineup/api/players/myteam')
     .then(res => res.json())
     .then(searchResults => this.setState({ searchResults : searchResults }))
     // .then(console.log("team ok"))
@@ -748,7 +748,7 @@ class App extends React.Component {
 
   // Prende elenco di giocatori selezionati
   getSavedLineup = () => {
-    fetch('/teams/lineup/api/selected/myteam')
+    fetch('/team/lineup/api/selected/myteam')
     .then(res => res.json())
     .then(savedLineup => this.setState({ savedLineup : savedLineup }))
     // .then(console.log("lineup ok"))
@@ -758,7 +758,7 @@ class App extends React.Component {
   setActiveTactic = tacticNameBase => {
     if (tacticNameBase === undefined) {
       var tacticName = 'default'
-      fetch(`/teams/lineup/api/tactic/${tacticName}`)
+      fetch(`/team/lineup/api/tactic/${tacticName}`)
       .then(res => res.json())
       // .then(activeTactic => this.setState({ activeTactic : activeTactic }))
       // .then(console.log("tactic ok"));
@@ -770,7 +770,7 @@ class App extends React.Component {
       // console.log(tacticName);
     } else {
       var tacticName = tacticNameBase
-      fetch(`/teams/lineup/api/tactic/${tacticName}`)
+      fetch(`/team/lineup/api/tactic/${tacticName}`)
       .then(res => res.json())
       // .then(activeTactic => this.setState({ activeTactic : activeTactic }))
       // .then(console.log("tactic ok"));

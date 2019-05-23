@@ -9,6 +9,16 @@
   height:38px;
 }
 
+/* ruoli su una riga */
 .ruoli {
   display: inline;
+}
+
+/* tabella con righe strette */
+table.table-sm td p {
+  padding-bottom: 0px;
+  padding-top: 0px;
+  border-bottom: 0px;
+  border-top: 0px;
+  margin-bottom: 0px;
 }
