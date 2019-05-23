@@ -1,0 +1,8 @@
+
+
+
+
+$:
+cd /home/pi/coding/wanda/scraping
+python3 main_fifa_players.py
+

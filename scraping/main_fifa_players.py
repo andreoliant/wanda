@@ -6,21 +6,22 @@
 import os
 import requests
 from bs4 import BeautifulSoup
-# import re
 import csv
 import time
-#import scrape_fifa
 
 out_folder = os.path.join(os.getcwd(), '_output')
 in_folder = os.path.join(os.getcwd(), '_input')
 
 # settings
+#MEMO: cambiare a mano url_base2 e filename
+url_base2 = 'https://www.fifaindex.com/it/players/fifa18_278/'
+filename = 'link_1718.csv'
+nmax = 600
+# MEMO: era 605 nella versione per 1819
 
-# url_base serve per il ciclo sulle pagine dei singoli giocatori
-url_base2 = 'http://www.fifaindex.com/it/players/'
-# url_base serve per il ciclo sulle pagine degli elenchi dei giocatori
+# run
 players=[]
-out_file = os.path.join(in_folder, 'link.csv')
+out_file = os.path.join(in_folder, filename)
 file_exists = os.path.isfile(out_file)
 with open(out_file, "a") as out:
     headers = ['LINK']
@@ -29,8 +30,9 @@ with open(out_file, "a") as out:
         writer.writeheader()
 
     # mettere a 605
-        for i in range(1,605):
+        for i in range(1, nmax):
             url = url_base2 + str(i) + '/'
+            print(i)
             try:
                 page = requests.get(url)
                 soup = BeautifulSoup(page.text, 'html.parser')
@@ -40,10 +42,10 @@ with open(out_file, "a") as out:
                 for link in links:
                     pippo=link.find('a',{'class':'link-player'})
                     writer.writerow({'LINK': pippo.get('href')})
-    #            players.append(pippo.get('href'))
+                    # players.append(pippo.get('href'))
             except AttributeError:
                 page = None
-        # sleep
+            # sleep
             time.sleep(5)
 
 
