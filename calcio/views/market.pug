@@ -1,0 +1,233 @@
+extends base
+
+block styles
+  link(href="/static/css/jquery-ui.css", rel="stylesheet")
+    
+  style(type="text/css").
+    
+    #slider-range {
+      width: 90%;
+    }
+    
+    .ui-slider-handle.custom-handle {
+      width: 2em;
+      height: 1.6em;
+      top: 50%;
+      margin-top: -.8em;
+      text-align: center;
+      line-height: 1.6em;
+    }
+
+block navbar
+  ul.navbar-nav.mr-auto
+    li.nav-item
+      a(class="nav-link" href="/team") Squadra
+    li.nav-item
+      a(class="nav-link active" href="/market") Mercato
+    li.nav-item
+      a(class="nav-link" href="#") Finanze
+    li.nav-item
+      a(class="nav-link" href="#") Media
+    li.nav-item
+      a(class="nav-link" href="#") Calendario
+    li.nav-item
+      a(class="nav-link" href="#") Partita
+      
+block navbar-left
+  div.sidebar-sticky
+    ul.nav.flex-column
+      li.nav-item
+        a(class="nav-link active" href="/market")
+          span(data-feather="rooster") Ricerca
+      li.nav-item
+        a(class="nav-link" href="/market/shortlist")
+          span(data-feather="lineup") Shortlist
+      li.nav-item
+        a(class="nav-link" href="/market/shortlist")
+          span(data-feather="training") Rete osservatori
+      li.nav-item
+        a(class="nav-link" href="#")
+          span(data-feather="mood") ...
+          //- Qui andrebbe inserita anche ricerca Staff
+    h6.sidebar-heading.d-flex.justify-content-between.align-items-center.px-3.mt-4.mb-1.text-muted
+      span Filtri
+                          
+    form.sidebar-form(method="post", action="/market")
+      div.form-group.nav-item
+        //- TODO: inserire "In scadenza"
+        //- TODO: inserire autocomplete per "playerName"
+        //- label(for="playerName") Nome
+        input(type="text" class="form-control" id="auto-player" placeholder="Nome" 
+              name="playerName" aria-describedby="auto-player")
+      div.form-group
+        //- label(for="teamName") Squadra
+        input(type="text" class="form-control" id="auto-team" placeholder="Squadra"
+              name="teamName" aria-describedby="auto-team")
+      div.form-group
+        //- label(for="playerNation") Nazionalità
+        input(type="text" class="form-control" id="playerNation" placeholder="Nazione"
+              name="playerNation" aria-describedby="playerNation")
+
+      div.form-group
+        div.input-group
+          div.input-group-prepend
+            span.input-group-text Età
+          input(type="number" class="form-control" id="etaMin" placeholder="min"
+                name="etaMin" aria-label="etaMin")
+          input(type="number" class="form-control" id="etaMax" placeholder="max"
+                name="etaMax" aria-label="etaMax")
+      
+      div.form-group
+        div.input-group
+          div.input-group-prepend
+            span.input-group-text Prezzo
+          input(type="number" class="form-control" id="priceMax" placeholder="max"
+                name="priceMax" aria-label="priceMax")
+
+      div.form-group
+        div.input-group
+          div.input-group-prepend
+            span.input-group-text Ingaggio
+          input(type="number" class="form-control" id="wageMax" placeholder="max"
+                name="wageMax" aria-label="wageMax")
+                                                    
+      div.form-group
+        //- label(for="playerPos") Ruolo
+        select(id="playerPos" class="custom-select custom-select-sm")
+          option(selected) Posizione (default)
+          option(value="POR") Portiere
+          option(value="DC") Difensore centrale
+          option(value="TD") Terzino destro
+          option(value="TS") Terzino sinistro
+          option(value="ADA") Tornante destro
+          option(value="ASA") Tornante sinistro
+          option(value="CDC") Mediano
+          option(value="CC") Centrocampista centrale
+          option(value="ED") Centrocampista destro
+          option(value="ES") Centrocampista sinistro
+          option(value="COC") Trequartista
+          option(value="AD") Ala destra
+          option(value="AS") Ala sinistra
+          option(value="AT") Seconda punta
+          option(value="ATT") Punta centrale
+          //- c("POR", "DC", "TD", "TS", "ADA", "ASA", "CDC", "CC", 
+          //-      "ED", "ES", "COC", "AD",  "AS",  "AT",  "ATT")
+      
+      div.form-group
+        label(for="forza") Forza
+        //- input(type="text" id="forza" readonly style="border:0; color:#f6931f; font-weight:bold;")
+        input(type="text" id="forzaMin" name="forzaMin" 
+              style="display:none" readonly)
+        input(type="text" id="forzaMax" name="forzaMax"
+              style="display:none" readonly)
+        div(id="slider-range")
+          //- div(id="forzaMin" class="ui-slider-handle custom-handle")
+          //- div(id="forzaMax" class="ui-slider-handle custom-handle")
+          div(id="handlerForzaMin" class="ui-slider-handle custom-handle")
+          div(id="handlerForzaMax" class="ui-slider-handle custom-handle")
+              
+      button(type="submit" class="btn btn-primary") Cerca
+    
+
+block main
+  if players
+    div.container
+      table(class="table table-hover")
+        thead(class="thead-light")
+          tr
+            th(scope="col") Foto
+            th(scope="col") Nome
+            th(scope="col") Forza
+            th(scope="col") Ruoli
+            //- th(scope="col") Club
+        each player in players
+          tbody
+            tr(key=`${player.id}` className="Result-player grabbable")
+              td 
+                img(
+                  class="playerphoto"
+                  src=`${"../../data/images/photos/" + player.photo_folder + "/" + player.id + ".png"}`
+                  alt=`${player.nome}`
+                  )
+              td
+                a(href="/team/market/"+`${player.id}`) 
+                  p #{player.nome}
+              td
+                p #{player.valtot}
+              //- td
+              //-   each role in player.pos_all.split(":::")
+              //-     p.ruoli #{role} 
+                  
+              //- td
+              //-   img(
+              //-     class="clubicon"
+              //-     src=`${player.club.logo}`
+              //-     alt=`${player.club.name}`
+              //-     )
+
+            
+block scripts
+  script(src="/static/js/jquery-ui.js")
+  
+  //- autocomplete per squadra
+  script(type="text/javascript").
+    $(function() {
+      $("#auto-team").autocomplete({
+          source: function(request, response) {
+              $.getJSON("/auto-team",{
+                  team: request.term,
+              }, function(data) {
+                  response(data.results);
+              });
+          }
+      });
+    })
+
+  //- autocomplete per giocatore
+  script(type="text/javascript").
+    $(function() {
+      $("#auto-player").autocomplete({
+          source: function(request, response) {
+              $.getJSON("/auto-player",{
+                  player: request.term,
+              }, function(data) {
+                  response(data.results);
+              });
+          }
+      });
+    })
+  
+  
+  //- range slider per forza giocatore
+  //- TODO: restringere lato dx
+  script(type="text/javascript").
+    $( function() {
+      var handle = $( "#custom-handle" );
+      $( "#slider-range" ).slider({
+        range: true,
+        animate: true,
+        min: 20,
+        max: 100,
+        values: [ 60, 100 ],
+        create: function() {
+          $( "#handlerForzaMin" ).text( $( this ).slider( "value" ) );
+          $( "#handlerForzaMax" ).text( $( this ).slider( "value" ) );
+        },
+
+        slide: function( event, ui ) {
+          $( "#forzaMin" ).val( ui.values[ 0 ] );
+          $( "#handlerForzaMin" ).text( ui.values[ 0 ] );
+          $( "#forzaMax" ).val( ui.values[ 1 ] );
+          $( "#handlerForzaMax" ).text( ui.values[ 1 ] );
+        }
+      });
+      /* default values */
+      $( "#forzaMin" ).val( $( "#slider-range" ).slider( "values", 0 ));
+      $( "#handlerForzaMin" ).text( $( "#slider-range" ).slider( "values", 0 ));
+      $( "#forzaMax" ).val( $( "#slider-range" ).slider( "values", 1 ));
+      $( "#handlerForzaMax" ).text( $( "#slider-range" ).slider( "values", 1 ));
+    } );
+
+        
+        
+        

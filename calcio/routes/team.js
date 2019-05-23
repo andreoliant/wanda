@@ -3,29 +3,30 @@
 
 // libs
 const express = require('express');
+const DB = require('./../database.js');
 
 // router instance
 const router = express.Router();
 
 // load team (TEMP)
-const playersIndex = require('../data/team_index.json');
-
-var getSearchResults = playersIndex => {
-  let playerFile = "";
-  let searchResults = [];
-  for (const player in playersIndex) {
-    let playerFilePath = playersIndex[player];
-    let playerFile = require("." + `${playerFilePath}`);
-    playerFile.shortName = playerFile.name.split(' ').slice(-1).join(' ');
-    playerFile.photo = "." + playerFile.photo;
-    playerFile.club.logo = "." + playerFile.club.logo;
-    searchResults.push(playerFile);
-    // console.log(searchResults);
-  }
-  return searchResults;
-};
-
-setSupervars(supervars, "SearchResults", getSearchResults(playersIndex))
+// const playersIndex = require('../data/team_index.json');
+//
+// var getSearchResults = playersIndex => {
+//   let playerFile = "";
+//   let searchResults = [];
+//   for (const player in playersIndex) {
+//     let playerFilePath = playersIndex[player];
+//     let playerFile = require("." + `${playerFilePath}`);
+//     playerFile.shortName = playerFile.name.split(' ').slice(-1).join(' ');
+//     playerFile.photo = "." + playerFile.photo;
+//     playerFile.club.logo = "." + playerFile.club.logo;
+//     searchResults.push(playerFile);
+//     // console.log(searchResults);
+//   }
+//   return searchResults;
+// };
+//
+// setSupervars(supervars, "SearchResults", getSearchResults(playersIndex))
 
 
 // rosa
@@ -33,10 +34,61 @@ router.get('/', (req, res) => {
   // res.render('teams', {
   //   players: SearchResults
   // });
-  res.render('teams', {
+  res.render('team', {
      supervars : supervars
   })
 });
+
+// prove per DB
+router.get('/prova/:player', (req, res) => {
+
+  let sql = "SELECT * FROM players WHERE id=?"
+
+  DB.get(sql, req.params.player, (err, thisPlayer) => {
+    if (err) {
+      return console.error(err.message);
+    }
+
+    // res.render('player', {
+    //    supervars : supervars,
+    //    player : thisPlayer
+    // })
+    console.log(thisPlayer);
+    res.send(thisPlayer);
+  });
+});
+
+// pagina per player
+router.get('/player/:player', (req, res) => {
+
+  let sql = "SELECT * FROM players WHERE id=?"
+
+  DB.get(sql, req.params.player, (err, thisPlayer) => {
+    if (err) {
+      return console.error(err.message);
+    }
+
+    res.render('player', {
+       supervars : supervars,
+       player : thisPlayer
+    })
+    // console.log(thisPlayer);
+    // res.send(thisPlayer);
+  });
+});
+
+// let sql = `SELECT DISTINCT Name name FROM playlists
+//            ORDER BY name`;
+//
+// db.all(sql, [], (err, rows) => {
+//   if (err) {
+//     throw err;
+//   }
+//   rows.forEach((row) => {
+//     console.log(row.name);
+//   });
+// });
+
 
 
 // lineup
@@ -58,6 +110,7 @@ router.get('/lineup/api/players/:team', (req, res) => {
     res.json(data);
   };
   console.log('Sent searchResults to client');
+  console.log(supervars.SearchResults.length);
 });
 
 // API > selected players

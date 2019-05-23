@@ -5,6 +5,7 @@ html(lang="ita")
     meta(name="viewport", content="width=device-width, initial-scale=1.0, maximum-scale=5.0")
     //- Bootstrap
     link(href="/static/css/bootstrap.min.css", rel="stylesheet")
+    link(href="/static/css/jquery-ui.css", rel="stylesheet")
     link(href="/static/css/start.css", rel="stylesheet")
       
     title Wanda Football Manager
@@ -16,15 +17,32 @@ html(lang="ita")
           label(for="managerName") Manager
           input(type="text", class="form-control", id="managerName", name="managerName",
            aria-describedby="managerName", placeholder="Chi sei?")
+        //- div.form-group
+        //-   label(for="teamName") Squadra
+        //-   select(class="form-control", id="teamName", name="teamName")
+        //-     option Inter
+        //-     option Milan
+        //-     option Roma
+        //-     option Pizzighettone
         div.form-group
-          label(for="teamName") Squadra
-          select(class="form-control", id="teamName", name="teamName")
-            option Inter
-            option Milan
-            option Roma
-            option Pizzighettone
+          label(for="auto-team", class="sr-only") Squadra
+          input(type="text", class="form-control", id="auto-team", name="teamName",
+            aria-describedby="auto-team", placeholder="...")
         button(type="submit", class="btn btn-danger") Avvia il gioco
               
     script(src="/static/js/jquery-3.3.1.js")
     script(src="/static/js/popper.js")
     script(src="/static/js/bootstrap.min.js")
+    script(src="/static/js/jquery-ui.js")
+    script(type="text/javascript").
+      $(function() {
+        $("#auto-team").autocomplete({
+            source: function(request, response) {
+                $.getJSON("/auto-team",{
+                    team: request.term,
+                }, function(data) {
+                    response(data.results);
+                });
+            }
+        });
+      })

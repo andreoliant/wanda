@@ -21,19 +21,8 @@ html(lang="ita")
         aria-label="Toggle navigation")
         span.navbar-toggler-icon
       div(class="collapse navbar-collapse" id="navbarsExampleDefault")
-        ul.navbar-nav.mr-auto
-          li.nav-item
-            a(class="nav-link" href="/teams") Squadra
-          li.nav-item
-            a(class="nav-link" href="#") Mercato
-          li.nav-item
-            a(class="nav-link" href="#") Finanze
-          li.nav-item
-            a(class="nav-link" href="#") Media
-          li.nav-item
-            a(class="nav-link" href="#") Calendario
-          li.nav-item
-            a(class="nav-link" href="#") Partita
+        block navbar
+        
       div(class="collapse navbar-collapse" id="navbarsExampleDefault")
         ul.navbar-nav.ml-auto
           li.nav-item
@@ -44,7 +33,7 @@ html(lang="ita")
     div.container-fluid
       div.row
         nav.col-md-2.d-none.d-md-block.bg-light.sidebar
-          block navbar
+          block navbar-left
         main(role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4")
           block main
 

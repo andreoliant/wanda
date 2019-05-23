@@ -4,15 +4,30 @@ extends base
 block styles
   link(href="/static/css/lineup.css", rel="stylesheet")
   //- link(href="/static/css/normalize.css", rel="stylesheet")
-    
+
 block navbar
+  ul.navbar-nav.mr-auto
+    li.nav-item
+      a(class="nav-link active" href="/team") Squadra
+    li.nav-item
+      a(class="nav-link" href="/market") Mercato
+    li.nav-item
+      a(class="nav-link" href="#") Finanze
+    li.nav-item
+      a(class="nav-link" href="#") Media
+    li.nav-item
+      a(class="nav-link" href="#") Calendario
+    li.nav-item
+      a(class="nav-link" href="#") Partita
+        
+block navbar-left
   div.sidebar-sticky
     ul.nav.flex-column
       li.nav-item
-        a(class="nav-link" href="/teams")
+        a(class="nav-link" href="/team")
           span(data-feather="rooster") Rosa
       li.nav-item
-        a(class="nav-link active" href="/teams/lineup")
+        a(class="nav-link active" href="/team/lineup")
           span(data-feather="lineup") Lineup
       li.nav-item
         a(class="nav-link" href="#")

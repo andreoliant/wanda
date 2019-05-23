@@ -12,6 +12,7 @@ library("RSQLite")
 DATA <- file.path(dirname(getwd()), "scraping", "_dump")
 DB <- file.path(getwd(), "db")
 in_path <- file.path(getwd(), "_input")
+out_path <- file.path(getwd(), "_output")
 
 # nav
 json_list <- list.files(path=DATA)
@@ -163,6 +164,10 @@ players <- players %>%
 #   mutate(chk = naz_team == club_team)
 # MEMO: club_team è duplicato in naz_team
 
+# export
+write.csv2(players, file.path(out_path, "players.csv"), row.names = FALSE)
+
+
 # --------------------------------------------------------------------------- #
 # summary
 
@@ -201,39 +206,110 @@ chk <- players %>%
 # --------------------------------------------------------------------------- #
 # team list
 
-appo <- read_lines("teams.txt") %>%
-  str_split("\\|") %>%
-  unlist() %>%
-  str_split("\\:") 
-
-bind_rows(appo)
-
-# convert to df
-get_teams <- function(x) {
-  df <- data_frame()
-  df[1, "id_team"] <- str_pad(x[1], 4, pad = "0") 
-  df[1, "club_team"] <- x[2]
-  return(df)
-}
-
-teams_list <- bind_rows(lapply(appo, get_teams))
-
-teams %>%
-  anti_join(teams_list)
-
-teams_list %>%
-  anti_join(teams)
+# appo <- read_lines("teams.txt") %>%
+#   str_split("\\|") %>%
+#   unlist() %>%
+#   str_split("\\:") 
+# 
+# bind_rows(appo)
+# 
+# # convert to df
+# get_teams <- function(x) {
+#   df <- data_frame()
+#   df[1, "id_team"] <- str_pad(x[1], 4, pad = "0") 
+#   df[1, "club_team"] <- x[2]
+#   return(df)
+# }
+# 
+# teams_list <- bind_rows(lapply(appo, get_teams))
+# 
+# teams %>%
+#   anti_join(teams_list)
+# 
+# teams_list %>%
+#   anti_join(teams)
 
 # WARNING: gli "id" presenti in quesot file non corrispondono alle url quindi è inutile prederli...
 
+# reload
+players <- read_csv2(file.path(out_path, "players.csv"))
 
+# load
+teams_raw <- read_csv(file.path(in_path, "teams_temp.csv"))
 
+chk <- players %>% anti_join(teams_raw, by = "club_team")
+chk %>% count(club_team)
+# club_team           n
+# 1 Changchun Yatai     2
+# 2 San Luis            1
+# 3 Svincolati         93
+
+chk <- teams_raw %>% anti_join(players, by = "club_team")
+chk %>% count(nome_lega)
+# nome_lega              n
+# 1 3. Liga               15
+# 2 Allsvenskan            2
+# 3 Camp. Scotiabank       2
+# 4 Domino's Ligue 2       2
+# 5 EFL League One        20
+# 6 EFL League Two        19
+# 7 Ekstraklasa            2
+# 8 Eliteserien           10
+# 9 Eredivisie             2
+# 10 K-League 1             1
+# 11 Liga Dimayor           4
+# 12 Meiji Yasuda J1        2
+# 13 Ö. Bundesliga          6
+# 14 Scottish Prem          5
+# 15 SSE Airtricity Lge     2
+# 16 Superliga              7
+
+# clean
+teams <- teams_raw %>%
+  mutate(id_team = str_pad(gsub('/it/team/([0-9]*)/.*', '\\1', link_team), 6, pad = "0"),
+         id_league = str_pad(gsub('/it/teams/\\?league=([0-9]*)', '\\1', link_lega), 4, pad = "0")) %>%
+  select(id_team, club_team, id_league, nome_lega)
+
+players <- players %>%
+  left_join(teams %>%
+              select(id_team, club_team), 
+            by = "club_team")
+
+# export
+write.csv2(players, file.path(out_path, "players.csv"), row.names = FALSE)
 
 
 # --------------------------------------------------------------------------- #
 # elenco campionati (e match con team)
 
+leagues <- teams %>%
+  distinct(id_league, nome_lega)
 
+
+# --------------------------------------------------------------------------- #
+# posizioni
+
+positions <- players %>%
+  select(pos_all) %>%
+  mutate(pos_all = str_split(pos_all, ":::", simplify = TRUE)) 
+
+# matrice delle combinazioni distinct di ruoli
+appo <- unique(str_split(players$pos_all, ":::", simplify = TRUE))
+
+# accoda ogni colonna in appo in unico vettore
+memo <- c()
+temp <- sapply(appo, function(x) {memo <- c(memo, x)})
+
+# arrange
+positions <- unique(temp)
+positions <- positions[which(positions != "")]
+pos_levels <- c("POR", "DC", "TD", "TS", "ADA", "ASA", "CDC", "CC", 
+                "ED", "ES", "COC", "AD",  "AS",  "AT",  "ATT")
+# HAND: da integrare a mano se compaiono altri ruoli
+postions <- factor(positions, levels = pos_levels)
+postions <- postions[order(postions)]                                             
+
+# TODO: da inserire nel DB
 
 
 # --------------------------------------------------------------------------- #
@@ -244,6 +320,8 @@ db <- dbConnect(SQLite(), file.path(DB, "wanda.sqlite"))
 
 # write table
 dbWriteTable(db, "players", players, overwrite=TRUE, row.names=FALSE)
+dbWriteTable(db, "teams", teams, overwrite=TRUE, row.names=FALSE)
+dbWriteTable(db, "leagues", leagues, overwrite=TRUE, row.names=FALSE)
 
 # DEBUG:
 # chk <- dbReadTable(db, "players")
@@ -251,3 +329,73 @@ dbWriteTable(db, "players", players, overwrite=TRUE, row.names=FALSE)
 # chiude
 dbDisconnect(db)
 # MEMO: copiare a mano il db in webapp
+
+# CREATE TABLE `players` (
+#   `id` TEXT,
+#   `nome` TEXT,
+#   `naz` TEXT,
+#   `valtot` INTEGER,
+#   `valpot` INTEGER,
+#   `altezza` INTEGER,
+#   `peso` INTEGER,
+#   `piedepref` TEXT,
+#   `datanasc` REAL,
+#   `eta` INTEGER,
+#   `pos` TEXT,
+#   `pos_all` TEXT,
+#   `rend` TEXT,
+#   `piededeb` INTEGER,
+#   `mosseab` INTEGER,
+#   `valore_e` REAL,
+#   `club_team` TEXT,
+#   `club_pos` TEXT,
+#   `club_maglia` INTEGER,
+#   `club_dt_ent` REAL,
+#   `club_dur_ctr` INTEGER,
+#   `stipendio_e` REAL,
+#   `naz_team` TEXT,
+#   `naz_pos` TEXT,
+#   `naz_maglia` INTEGER,
+#   `contr_palla` INTEGER,
+#   `dribbling` INTEGER,
+#   `marcatura` INTEGER,
+#   `scivolata` INTEGER,
+#   `contr_piedi` INTEGER,
+#   `aggressivita` INTEGER,
+#   `reattivita` INTEGER,
+#   `pos_attacco` INTEGER,
+#   `intercetta` INTEGER,
+#   `visione` INTEGER,
+#   `freddezza` INTEGER,
+#   `cross` INTEGER,
+#   `pass_corto` INTEGER,
+#   `pass_lungo` INTEGER,
+#   `acceleraz` INTEGER,
+#   `resistenza` INTEGER,
+#   `forza` INTEGER,
+#   `equilibrio` INTEGER,
+#   `vel_scatto` INTEGER,
+#   `agilita` INTEGER,
+#   `elevazione` INTEGER,
+#   `colpo_testa` INTEGER,
+#   `pot_tiro` INTEGER,
+#   `finalizzaz` INTEGER,
+#   `tiri_dist` INTEGER,
+#   `effetto` INTEGER,
+#   `prec_puniz` INTEGER,
+#   `tiri_volo` INTEGER,
+#   `rigori` INTEGER,
+#   `piazzamento` INTEGER,
+#   `tuffo` INTEGER,
+#   `presa` INTEGER,
+#   `rinvio` INTEGER,
+#   `riflessi` INTEGER,
+#   `caratteristiche` TEXT,
+#   `specialita` TEXT,
+#   `photo_folder` INTEGER,
+#   `id_team` TEXT
+# )
+
+
+
+

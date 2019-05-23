@@ -1,0 +1,269 @@
+extends base
+
+block navbar
+  ul.navbar-nav.mr-auto
+    if player.club_team === supervars.teamName
+      li.nav-item
+        a(class="nav-link active" href="/team") Squadra
+    else
+      li.nav-item
+        a(class="nav-link" href="/team") Squadra
+    li.nav-item
+      a(class="nav-link" href="/market") Mercato
+    li.nav-item
+      a(class="nav-link" href="#") Finanze
+    li.nav-item
+      a(class="nav-link" href="#") Media
+    li.nav-item
+      a(class="nav-link" href="#") Calendario
+    li.nav-item
+      a(class="nav-link" href="#") Partita
+
+block navbar-left
+  div.sidebar-sticky
+    ul.nav.flex-column
+      li.nav-item
+        a(class="nav-link active" href="/team")
+          span(data-feather="rooster") Rosa
+      li.nav-item
+        a(class="nav-link" href="/team/lineup")
+          span(data-feather="lineup") Lineup
+      li.nav-item
+        a(class="nav-link" href="#")
+          span(data-feather="tactic") Tattica
+      li.nav-item
+        a(class="nav-link" href="#")
+          span(data-feather="training") Allenamento
+      li.nav-item
+        a(class="nav-link" href="#")
+          span(data-feather="mood") Morale
+    
+    h6.sidebar-heading.d-flex.justify-content-between.align-items-center.px-3.mt-4.mb-1.text-muted
+      span Parla con il giocatore
+
+    ul.nav.flex-column.mb-2
+      li.nav-item
+        //-  Button trigger modal
+        a(type="button" class="nav-link" data-toggle="modal" data-target="#contract") Contratto
+        a(type="button" class="nav-link" data-toggle="modal" data-target="#behaviour") Comportamento
+
+block main
+  //- div#root
+  div.container
+    div.row
+      div.col
+        div.card-group
+          div.card
+            img.card-img-top(
+              src=`${"../../data/images/photos/" + player.photo_folder + "/" + player.id + ".png"}`  
+              alt=`${player.nome}`
+              )
+            div.card-body
+              
+          div.card
+            h2 
+              span.badge.badge-dark #{player.club_maglia}
+              span #{player.nome}
+            h4
+              span.badge.badge-secondary #{player.pos} 
+              each pos in player.pos_all.split(":::").slice(1)
+                span.badge.badge-light= pos
+            h4 
+              span.badge.badge-pill.badge-info #{player.valtot}
+              span  media 
+            h4
+              span.badge.badge-pill.badge-warning #{player.valpot}
+              span  potenziale
+          div.cardr
+            div.card-header Contratto
+            ul.list-group.list-group-flush
+              li.list-group-item.d-flex.justify-content-between.align-items-center Valore
+                span.badge.badge-primary.badge-light #{"€ " + player.valore_e.toLocaleString()}
+              li.list-group-item.d-flex.justify-content-between.align-items-center Ingaggio
+                span.badge.badge-primary.badge-light #{"€ " + (player.stipendio_e * 12).toLocaleString()}
+              li.list-group-item.d-flex.justify-content-between.align-items-center In squadra da 
+                span.badge.badge-primary.badge-light #{player.club_dt_ent}
+              li.list-group-item.d-flex.justify-content-between.align-items-center Durata
+                span.badge.badge-primary.badge-light #{player.club_dur_ctr}
+                //- "club_pos"
+          div.card
+            div.card-header Info
+            ul.list-group.list-group-flush
+              li.list-group-item.d-flex.justify-content-between.align-items-center Età
+                span.badge.badge-primary.badge-light #{ player.eta + " (" + player.datanasc + ")" }
+              li.list-group-item.d-flex.justify-content-between.align-items-center Altezza
+                span.badge.badge-primary.badge-light #{player.altezza + " cm"} 
+              li.list-group-item.d-flex.justify-content-between.align-items-center Peso
+                span.badge.badge-primary.badge-light #{player.peso + " kg"} 
+              li.list-group-item.d-flex.justify-content-between.align-items-center Piede preferito
+                span.badge.badge-primary.badge-light #{player.piedepref} 
+              //- "piededeb", "mosseab", "rend",
+
+
+        //-      # Nazionale
+          //-      "naz_team", "naz_pos", "naz_maglia", 
+          div.row
+            div.col
+              
+                  
+    div.row
+      div.col
+        nav
+          div.nav.nav-tabs(id="nav-tab" role="tablist")
+            a.nav-item.nav-link.active(id="nav-forza-tab" data-toggle="tab" href="#nav-forza" role="tab" aria-controls="nav-forza" aria-selected="true") Forza
+            a.nav-item.nav-link(id="nav-ability-tab" data-toggle="tab" href="#nav-ability" role="tab" aria-controls="nav-ability" aria-selected="false") Abilità
+            a.nav-item.nav-link(id="nav-contact-tab" data-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false") ...
+        div.tab-content(id="nav-tabContent")
+          div.tab-pane.fade.show.active(id="nav-forza" role="tabpanel" aria-labelledby="nav-forza-tab")
+            div.card-group
+              div.card
+                div.card-header Passaggi e tocco
+                ul.list-group.list-group-flush
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Cross
+                    span.badge.badge-primary.badge-pill #{player.cross} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Passaggio corto
+                    span.badge.badge-primary.badge-pill #{player.pass_corto} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Passaggio lungo
+                    span.badge.badge-primary.badge-pill #{player.pass_lungo} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Controllo palla
+                    span.badge.badge-primary.badge-pill #{player.contr_palla}
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Dribbling
+                    span.badge.badge-primary.badge-pill #{player.dribbling}                   
+              div.card
+                div.card-header Tiro
+                ul.list-group.list-group-flush
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Finalizzazione
+                    span.badge.badge-primary.badge-pill #{player.finalizzaz} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Potenza
+                    span.badge.badge-primary.badge-pill #{player.pot_tiro} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Effetto
+                    span.badge.badge-primary.badge-pill #{player.effetto} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Tiri da fuori
+                    span.badge.badge-primary.badge-pill #{player.tiri_dist} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Punizioni
+                    span.badge.badge-primary.badge-pill #{player.prec_puniz}                     
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Tiri al volo
+                    span.badge.badge-primary.badge-pill #{player.tiri_volo} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Colpo di testa
+                    span.badge.badge-primary.badge-pill #{player.colpo_testa}
+              div.card
+                div.card-header Difesa
+                ul.list-group.list-group-flush
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Marcatura
+                    span.badge.badge-primary.badge-pill #{player.marcatura} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Scivolata
+                    span.badge.badge-primary.badge-pill #{player.scivolata} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Contrasti
+                    span.badge.badge-primary.badge-pill #{player.contr_piedi}
+              div.card
+                div.card-header Porta
+                ul.list-group.list-group-flush
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Piazzamento
+                    span.badge.badge-primary.badge-pill #{player.piazzamento} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Tuffo
+                    span.badge.badge-primary.badge-pill #{player.tuffo} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Presa
+                    span.badge.badge-primary.badge-pill #{player.presa} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Rinvio
+                    span.badge.badge-primary.badge-pill #{player.rinvio} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Riflessi
+                    span.badge.badge-primary.badge-pill #{player.riflessi} 
+              div.card
+                div.card-header Carattere
+                ul.list-group.list-group-flush
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Aggressività
+                    span.badge.badge-primary.badge-pill #{player.aggressivita} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Reattività
+                    span.badge.badge-primary.badge-pill #{player.reattivita} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Posizione*
+                    span.badge.badge-primary.badge-pill #{player.pos_attacco} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Intercettazione
+                    span.badge.badge-primary.badge-pill #{player.intercetta} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Visione
+                    span.badge.badge-primary.badge-pill #{player.visione} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Freddezza
+                    span.badge.badge-primary.badge-pill #{player.freddezza} 
+              div.card
+                div.card-header Fisico
+                ul.list-group.list-group-flush 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Accelerazione
+                    span.badge.badge-primary.badge-pill #{player.acceleraz} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Resistenza
+                    span.badge.badge-primary.badge-pill #{player.resistenza} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Forza
+                    span.badge.badge-primary.badge-pill #{player.forza} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Equilibrio
+                    span.badge.badge-primary.badge-pill #{player.equilibrio} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Velocità scatto
+                    span.badge.badge-primary.badge-pill #{player.vel_scatto} 
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Agilità
+                    span.badge.badge-primary.badge-pill #{player.agilita}                     
+                  li.list-group-item.d-flex.justify-content-between.align-items-center Elevazione
+                    span.badge.badge-primary.badge-pill #{player.elevazione}
+          
+          div.tab-pane.fade(id="nav-ability" role="tabpanel" aria-labelledby="nav-ability-tab")
+            div.card-group
+              if player.caratteristiche
+                div.card
+                  div.card-header Caratteristiche
+                  ul.list-group.list-group-flush
+                    each pos in player.caratteristiche.split(":::").slice(1)
+                      li.list-group-item= pos 
+              else
+                div.card
+                  div.card-header Caratteristiche
+                  ul.list-group.list-group-flush
+                    li.list-group-item ...
+                      
+              if player.specialita
+                div.card
+                  div.card-header Specialità
+                  ul.list-group.list-group-flush
+                      each pos in player.specialita.split(":::").slice(1)
+                        li.list-group-item= pos
+              else
+                div.card
+                  div.card-header Specialità
+                  ul.list-group.list-group-flush
+                    li.list-group-item ...
+                    
+          div.tab-pane.fade(id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab") ...
+          //- add something here
+        
+  //- Modal
+  div(class="modal fade" id="contract" tabindex="-1" role="dialog" aria-labelledby="contractLabel" aria-hidden="true")
+    div.modal-dialog.modal-lg.modal-dialog-centered(role="document")
+      div.modal-content
+        div.modal-header
+          h5.modal-title(id="contractLabel") Parla con il procuratore
+          button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+            span(aria-hidden="true") &times;
+        div.modal-body
+          if player.club_team === supervars.teamName
+            a(class="nav-link" href="#") Offri nuovo contratto
+            a(class="nav-link" href="#") Licenzia il giocatore
+          else
+            a(class="nav-link" href="#") Fai un'offerta
+        div.modal-footer
+          button(type="button" class="btn btn-secondary" data-dismiss="modal") Close
+          button(type="button" class="btn btn-primary") Save change
+          //- qui deve inviare un post o ajax con dati...
+    
+  div(class="modal fade" id="behaviour" tabindex="-1" role="dialog" aria-labelledby="behaviourLabel" aria-hidden="true")
+    div.modal-dialog.modal-lg.modal-dialog-centered(role="document")
+      div.modal-content
+        div.modal-header
+          h5.modal-title(id="behaviourLabel") Gestisci le relazioni con lo spogliatoio
+          button(type="button" class="close" data-dismiss="modal" aria-label="Close")
+            span(aria-hidden="true") &times;
+        div.modal-body 
+          a(class="nav-link" href="#") Incoraggia il giocatore
+          a(class="nav-link" href="#") Nomina come Capitano
+          a(class="nav-link" href="#") Digli di cambiare procuratore
+        div.modal-footer
+          button(type="button" class="btn btn-secondary" data-dismiss="modal") Close
+          button(type="button" class="btn btn-primary") Save change
+        
+
+  
+        
