@@ -14,10 +14,11 @@ in_folder = os.path.join(os.getcwd(), '_input')
 
 # settings
 #MEMO: cambiare a mano url_base2 e filename
-url_base2 = 'https://www.fifaindex.com/it/players/fifa18_278/'
-filename = 'link_1718.csv'
-nmax = 600
-# MEMO: era 605 nella versione per 1819
+url_base2 = 'https://www.fifaindex.com/it/players/fifa10_6/'
+filename = 'link_0910.csv'
+nmax = 505
+# MEMO: era 605 nella versione per 1819, 600 per 1718, 587 per 1617, 569 per 1516, 550 per 1415, 556 per 1314
+# 502 per 1213, 484 per 1112, 507 per il 1011
 
 # run
 players=[]
@@ -29,7 +30,6 @@ with open(out_file, "a") as out:
     if not file_exists:
         writer.writeheader()
 
-    # mettere a 605
         for i in range(1, nmax):
             url = url_base2 + str(i) + '/'
             print(i)
