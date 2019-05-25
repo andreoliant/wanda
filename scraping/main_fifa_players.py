@@ -14,11 +14,12 @@ in_folder = os.path.join(os.getcwd(), '_input')
 
 # settings
 #MEMO: cambiare a mano url_base2 e filename
-url_base2 = 'https://www.fifaindex.com/it/players/fifa10_6/'
-filename = 'link_0910.csv'
-nmax = 505
+url_base2 = 'https://www.fifaindex.com/it/players/fifa05_1/'
+filename = 'link_0405.csv'
+nmax = 368
 # MEMO: era 605 nella versione per 1819, 600 per 1718, 587 per 1617, 569 per 1516, 550 per 1415, 556 per 1314
-# 502 per 1213, 484 per 1112, 507 per il 1011
+# 502 per 1213, 484 per 1112, 507 per il 1011, 505 per il 0910, 498 per il 0809, 429 per il 0708, 367 per 0607,
+# 341 per 0506, 368 per 0405
 
 # run
 players=[]

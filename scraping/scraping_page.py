@@ -10,13 +10,17 @@ import json
 import time
 # import scrape_fifa
 
+# params
+nav_csv = 'link_1718.csv'
+season = '1718'
+# CHK: 2018 significa stagione 2018-2019 e quindi edizione FIFA 2019 nel sito
+last = 520
+
 # setup
-out_folder = os.path.join(os.getcwd(), '_output')
+out_folder = os.path.join(os.getcwd(), '_output', season)
 in_folder = os.path.join(os.getcwd(), '_input')
-in_file = os.path.join(in_folder, 'link.csv')
+in_file = os.path.join(in_folder, nav_csv)
 url_base = 'http://www.fifaindex.com'
-season = '2018'
-# MEMO: 2018 significa stagione 2018-2019 e quindi edizione FIFA 2019 nel sito
 
 # navigator
 with open(in_file, mode='r') as csv_file:
@@ -24,10 +28,10 @@ with open(in_file, mode='r') as csv_file:
     navigator = [r for r in reader]
 
 url_list = [item['LINK'] for item in navigator]
-
+url_list = url_list[last:]
 
 # loop
-for url_add in url_list:
+for i, url_add in enumerate(url_list):
     # debug
     # url_list = url_list[0:10]
     # MEMO: url_base serve per il ciclo sulle pagine dei singoli giocatori
@@ -36,7 +40,8 @@ for url_add in url_list:
     # url='https://www.fifaindex.com/it/player/201179/antonio-donnarumma/'
     # url='https://www.fifaindex.com/it/player/158023/lionel-messi/'
     # url='https://www.fifaindex.com/it/player/193080/de-gea/'
-    print(url_add)
+    print(str(i + last) + ': ' + url_add)
+    
 
     # init
     players = {}
@@ -161,10 +166,10 @@ for url_add in url_list:
             players['club_dt_ent']= squadra_team.find(string=re.compile("Entrato nel club")).parent.find('span', {'class':'float-right'}).text
             players['club_dur_ctr']= squadra_team.find(string=re.compile("Durata Contratto")).parent.find('span', {'class':'float-right'}).text
     except:
-        squadre=soup_lg8.find(string=re.compile("Numero di maglia")).findParent().findParent().findParent()
-        players['naz_team'] = squadre.find('h5',{'class':'card-header'}).text
-        players['naz_pos'] = squadre.find(string=re.compile("Posizione")).parent.find('span',{'class':'float-right'}).text
-        players['naz_maglia'] = squadre.find(string=re.compile("Numero di maglia")).parent.find('span',{'class':'float-right'}).text
+        ## squadre=soup_lg8.find(string=re.compile("Numero di maglia")).findParent().findParent().findParent()
+        players['naz_team'] = '' #squadre.find('h5',{'class':'card-header'}).text
+        players['naz_pos'] = '' #squadre.find(string=re.compile("Posizione")).parent.find('span',{'class':'float-right'}).text
+        players['naz_maglia'] = ''#squadre.find(string=re.compile("Numero di maglia")).parent.find('span',{'class':'float-right'}).text
         players['club_team'] = ''
         players['club_pos'] = ''
         players['club_maglia'] = ''
