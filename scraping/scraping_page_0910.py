@@ -11,10 +11,9 @@ import time
 # import scrape_fifa
 
 # params
-nav_csv = 'link_1112.csv'
-season = '1011'
-# CHK: 2018 significa stagione 2018-2019 e quindi edizione FIFA 2019 nel sito
-last = 14446
+season = '0405'
+nav_csv = 'link_' + season + '.csv'
+last = 1343
 
 # setup
 out_folder = os.path.join(os.getcwd(), '_output', season)
@@ -41,7 +40,7 @@ for i, url_add in enumerate(url_list):
     # url='https://www.fifaindex.com/it/player/158023/lionel-messi/'
     # url='https://www.fifaindex.com/it/player/193080/de-gea/'
     print(str(i + last) + ': ' + url_add)
-    
+
 
     # init
     players = {}
@@ -145,26 +144,32 @@ for i, url_add in enumerate(url_list):
 
     #blocco 3 -> to do blocco squadra nazionale/club
     try:
-        squadra_team = soup_lg8.find(string=re.compile("Entrato nel club ")).findParent().findParent().findParent().findParent()
-        squadre = squadra_team.findParent()
-        if(str(squadre)==str('<div class="row">\n') + str(squadra_team) + str('\n</div>')):
-            players['naz_team'] = ''
-            players['naz_pos'] = ''
-            players['naz_maglia'] = ''
+        # squadra_team = soup_lg8.find(string=re.compile("Entrato nel club ")).findParent().findParent().findParent().findParent()
+        squadra_team = soup_lg8.find(string=re.compile("Durata Contratto ")).findParent().findParent().findParent().findParent()
+        # squadre = squadra_team.findParent()
+        squadre = squadra_team.parent.find_all('div',{'class':'card'})
+        #if (str(squadre) == str('<div class="row">\n') + str(squadra_team) + str('\n</div>')):
+        if (len(squadre) == 2):
+            players['naz_team'] = squadre[1].find('h5',{'class':'card-header'}).text
+            players['naz_pos'] = squadre[1].find(string=re.compile("Posizione")).parent.find('span',{'class':'float-right'}).text
+            players['naz_maglia'] = squadre[1].find(string=re.compile("Numero di maglia")).parent.find('span',{'class':'float-right'}).text
             players['club_team'] = squadra_team.find('h5',{'class':'card-header'}).text
             players['club_pos'] = squadra_team.find(string=re.compile("Posizione")).parent.find('span',{'class':'float-right'}).text
             players['club_maglia'] = squadra_team.find(string=re.compile("Numero di maglia")).parent.find('span', {'class':'float-right'}).text
-            players['club_dt_ent'] = squadra_team.find(string=re.compile("Entrato nel club")).parent.find('span', {'class':'float-right'}).text
+            #players['club_dt_ent'] = squadra_team.find(string=re.compile("Entrato nel club")).parent.find('span', {'class':'float-right'}).text
             players['club_dur_ctr'] = squadra_team.find(string=re.compile("Durata Contratto")).parent.find('span', {'class':'float-right'}).text
         else:
-            players['naz_team']=squadre.find('h5',{'class':'card-header'}).text
-            players['naz_pos']=squadre.find(string=re.compile("Posizione")).parent.find('span',{'class':'float-right'}).text
-            players['naz_maglia']=squadre.find(string=re.compile("Numero di maglia")).parent.find('span',{'class':'float-right'}).text
-            players['club_team']=squadra_team.find('h5',{'class':'card-header'}).text
-            players['club_pos']= squadra_team.find(string=re.compile("Posizione")).parent.find('span', {'class':'float-right'}).text
-            players['club_maglia']= squadra_team.find(string=re.compile("Numero di maglia")).parent.find('span', {'class':'float-right'}).text
-            players['club_dt_ent']= squadra_team.find(string=re.compile("Entrato nel club")).parent.find('span', {'class':'float-right'}).text
-            players['club_dur_ctr']= squadra_team.find(string=re.compile("Durata Contratto")).parent.find('span', {'class':'float-right'}).text
+            players['naz_team'] = ''
+            players['naz_pos'] = ''
+            players['naz_maglia'] = ''
+            players['club_team'] = squadra_team.find('h5', {'class': 'card-header'}).text
+            players['club_pos'] = squadra_team.find(string=re.compile("Posizione")).parent.find('span', {
+                'class': 'float-right'}).text
+            players['club_maglia'] = squadra_team.find(string=re.compile("Numero di maglia")).parent.find('span', {
+                'class': 'float-right'}).text
+            # players['club_dt_ent'] = squadra_team.find(string=re.compile("Entrato nel club")).parent.find('span', {'class':'float-right'}).text
+            players['club_dur_ctr'] = squadra_team.find(string=re.compile("Durata Contratto")).parent.find('span', {
+                'class': 'float-right'}).text
     except:
         ## squadre=soup_lg8.find(string=re.compile("Numero di maglia")).findParent().findParent().findParent()
         players['naz_team'] = '' #squadre.find('h5',{'class':'card-header'}).text
@@ -184,7 +189,7 @@ for i, url_add in enumerate(url_list):
         players['dribbling']= abilita.find(string=re.compile("Dribbling")).parent.find('span',{'class':'float-right'}).text
     except:
         players['dribbling']= ''
-        
+
     difesa= soup_lg8.find(string=re.compile("Difesa")).findParent().findParent()
     try:
         players['marcatura']= difesa.find(string=re.compile("Marcatura")).parent.find('span',{'class':'float-right'}).text
@@ -195,7 +200,8 @@ for i, url_add in enumerate(url_list):
     except:
         players['scivolata'] = ''
     try:
-        players['contr_piedi']= difesa.find(string=re.compile("Contr. piedi")).parent.find('span',{'class':'float-right'}).text
+        # players['contr_piedi']= difesa.find(string=re.compile("Contr. piedi")).parent.find('span',{'class':'float-right'}).text
+        players['contr_piedi']= difesa.find(string=re.compile("Contrasti")).parent.find('span',{'class':'float-right'}).text
     except:
         players['contr_piedi'] = ''
 
@@ -218,7 +224,7 @@ for i, url_add in enumerate(url_list):
         players['intercetta']= ''
     try:
         players['visione']= mentale.find(string=re.compile("Visione")).parent.find('span',{'class':'float-right'}).text
-    except: 
+    except:
         players['visione']= ''
     try:
         players['freddezza']= mentale.find(string=re.compile("Freddezza")).parent.find('span',{'class':'float-right'}).text
@@ -350,4 +356,3 @@ for i, url_add in enumerate(url_list):
     # MEMO: esporto come utf-8
 
     time.sleep(2)
-
